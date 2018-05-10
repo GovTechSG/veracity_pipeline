@@ -1,0 +1,15 @@
+# Unnecessary misc files/folders
+log/
+tmp/
+# For Mac users
+.DS_Store
+.idea/
+.byebug_history
+coverage
+*.env
+
+# Ignore application configuration
+/config/application.yml
+
+# Image files
+public/uploads
