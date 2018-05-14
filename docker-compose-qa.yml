@@ -7,7 +7,7 @@ services:
     depends_on:
       - clamd
     ports:
-      - "3000:3000"
+      - "3002:3000"
     volumes:
       - log:/app/src/log
     env_file:
@@ -17,11 +17,19 @@ services:
     depends_on:
       - clamd
     ports:
-      - "3002:3000"
+      - "3000:3000"
     volumes:
       - log:/app/src/log
     env_file:
       - qa.env
+  frontend:
+    image: wynn987/govt-review-frontend
+    depends_on:
+      - qa
+    ports:
+      - "5000:5000"
+    volumes:
+    - log:/app/src/log
 
 volumes:
   log: {}
