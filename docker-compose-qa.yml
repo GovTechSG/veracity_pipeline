@@ -24,8 +24,6 @@ services:
       - qa.env
   frontend:
     image: wynn987/govt-review-frontend
-    depends_on:
-      - qa
     ports:
       - "5000:5000"
     volumes:
