@@ -1,0 +1,30 @@
+*** Settings ***
+Documentation     *Objectives:*
+...               To Validate the Vendor Listing End To End Work Flow
+...               1. Backend to Frontend for Vendor Listing Index
+
+Suite Setup       Initialise ROR Test Suite
+Suite Teardown    Teardown Test Suite Without Alert
+Force Tags        vendor_listing_workflows    end-to-end    1
+Resource          ../resources/resource.txt
+
+*** Variables ***
+${vendor_list}    ${EMPTY}
+
+*** Test Cases ***
+[View by Best Ratings] List Vendors by Best Ratings
+	[Documentation]  *Objective:*    
+    ...            1. Retrieve Vendors from Backend
+    ...            2. Verify Vendors are sorted by ratings
+
+    ##Retrieve Vendors from Backend
+    ${vendor_list}    ${vendor_list}=    Load Vendor Listing Page
+    Set Suite Variable    ${vendor_list}
+
+    ##Verify Vendors are sorted by ratings
+    #Verify Vendors in list    ${approve_project_title_accept}    best_ratings
+
+*** Keywords ***
+Load Vendor Listing Page
+    Go To    ${LOGIN URL}
+    Title Should Be    Business Grants Portal
