@@ -18,13 +18,19 @@ ${vendor_list}    ${EMPTY}
     ...            2. Verify Vendors are sorted by ratings
 
     ##Retrieve Vendors from Backend
-    ${vendor_list}    ${vendor_list}=    Load Vendor Listing Page
-    Set Suite Variable    ${vendor_list}
+    Load Vendor Listing Page
+    ${VendorArray}=    Retrieve Vendors as Array 
 
     ##Verify Vendors are sorted by ratings
     #Verify Vendors in list    ${approve_project_title_accept}    best_ratings
 
 *** Keywords ***
 Load Vendor Listing Page
-    Go To    ${LOGIN URL}
-    Title Should Be    Business Grants Portal
+    Go To    ${HOME PAGE}
+    Title Should Be    Government Review Platform
+
+Retrieve Vendors as Array
+    ${matched elements}=    Get Webelements     xpath=vendor-item
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=    Get Text    ${element}      # will get the text of each matched node
+    \   Log  ${text}

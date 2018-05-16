@@ -1,0 +1,33 @@
+version: '2'
+services:
+  clamd:
+    image: dinkel/clamavd
+  sandbox:
+    image: wynn987/product-review-platform
+    depends_on:
+      - clamd
+    ports:
+      - "3002:3000"
+    volumes:
+      - log:/app/src/log
+    env_file:
+      - sandbox.env
+  qa:
+    image: wynn987/product-review-platform
+    depends_on:
+      - clamd
+    ports:
+      - "3000:3000"
+    volumes:
+      - log:/app/src/log
+    env_file:
+      - qa.env
+  frontend:
+    image: wynn987/govt-review-frontend
+    ports:
+      - "5000:5000"
+    volumes:
+    - log:/app/src/log
+
+volumes:
+  log: {}

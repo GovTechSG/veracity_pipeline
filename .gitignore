@@ -1,18 +1,29 @@
 # workspace settings
 /.vscode
 
-# misc
-.DS_Store
-
-*.env
-
+# Unnecessary misc files/folders
+log/
+tmp/
 .idea/
+.byebug_history
+coverage
+*.env
+.idea/
+
+# Localfiles
 local.txt
 robot/results/
 utility/UtilitiesLibrary.pyc
 tool/
-log/
-
 log.html
 output.xml
 report.html
+
+# For Mac users
+.DS_Store
+
+# Ignore application configuration
+/config/application.yml
+
+# Image files
+public/uploads

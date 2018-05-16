@@ -12,6 +12,7 @@ Library           Collections
 Library           String
 Library           OperatingSystem
 Library           ../utility/UtilitiesLibrary.py
+Resource          ../resources/RF_Helpers.txt
 
 
 *** Variables ***
