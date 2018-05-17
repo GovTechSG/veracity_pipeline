@@ -30,7 +30,8 @@ ${DB_NAME}        Postgres
 ${DB_PWD}         
 ${DB_CONN_STR}    '${DB_SERVER}:${DB_PORT}/${DB_NAME}'
 ${DELAY}          0
-${HOME PAGE}      https://${SERVER}
+${HOME PAGE}      http://${SERVER}
+#${HOME PAGE}      https://${SERVER}
 #${FULL_PATH_DEV_DB}    /Users/gds/git/bgp_frontend/db/development.sqlite3    # Full path to the development DB
 #${FULL_PATH_DEV_DB}    bgp_react_dev    # New PostgreSQL database for local machine
 ${FAILED_ERR_MSG}    Failed

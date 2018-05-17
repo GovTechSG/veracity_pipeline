@@ -10,6 +10,8 @@ Resource          ../resources/resource.txt
 
 *** Variables ***
 ${vendor_list}    ${EMPTY}
+${vendors_seeded_paginated}     ${10}
+${max_ratings}      ${100}
 
 *** Test Cases ***
 [View by Best Ratings] List Vendors by Best Ratings
@@ -19,18 +21,22 @@ ${vendor_list}    ${EMPTY}
 
     ##Retrieve Vendors from Backend
     Load Vendor Listing Page
-    ${VendorArray}=    Retrieve Vendors as Array 
+    Wait Until Page Contains Element    //div[contains(@class, 'vendor-container')]
+    ${count}=   Get Matching Xpath Count   xpath=//div[contains(@class, 'vendor-item')]
+    Should Be Equal As Integers     ${count}    ${vendors_seeded_paginated}
 
     ##Verify Vendors are sorted by ratings
-    #Verify Vendors in list    ${approve_project_title_accept}    best_ratings
+    Sorted by Ratings
 
 *** Keywords ***
 Load Vendor Listing Page
     Go To    ${HOME PAGE}
     Title Should Be    Government Review Platform
 
-Retrieve Vendors as Array
-    ${matched elements}=    Get Webelements     xpath=vendor-item
+Sorted by Ratings
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'aggregate_score')]
+    ${current_value}=   Set Variable   ${max_ratings}
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
-    \   Log  ${text}
+    \   less than or equal to   ${text}     ${current_value}
+    \   ${current_value}=   Set Variable    ${text}
