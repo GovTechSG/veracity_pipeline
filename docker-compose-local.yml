@@ -1,0 +1,24 @@
+version: '2'
+services:
+  postgres:
+    image: postgres
+  backend:
+    depends_on:
+      - postgres
+    image: wynn987/product-review-platform
+    ports:
+      - "3000:3000"
+    volumes:
+      - log:/app/src/log
+    env_file:
+      - dev.env
+  frontend:
+    image: wynn987/govt-review-frontend
+    ports:
+      - "5000:5000"
+    volumes:
+    - log:/app/src/log
+    entrypoint: "docker/docker-entrypoint-local.sh"
+
+volumes:
+  log: {}

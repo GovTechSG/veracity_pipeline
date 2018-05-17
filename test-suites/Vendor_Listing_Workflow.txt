@@ -1,0 +1,42 @@
+*** Settings ***
+Documentation     *Objectives:*
+...               To Validate the Vendor Listing End To End Work Flow
+...               1. Backend to Frontend for Vendor Listing Index
+
+Suite Setup       Initialise ROR Test Suite
+Suite Teardown    Teardown Test Suite Without Alert
+Force Tags        vendor_listing_workflows    end-to-end    1
+Resource          ../resources/resource.txt
+
+*** Variables ***
+${vendor_list}    ${EMPTY}
+${vendors_seeded_paginated}     ${10}
+${max_ratings}      ${100}
+
+*** Test Cases ***
+[View by Best Ratings] List Vendors by Best Ratings
+	[Documentation]  *Objective:*    
+    ...            1. Retrieve Vendors from Backend
+    ...            2. Verify Vendors are sorted by ratings
+
+    ##Retrieve Vendors from Backend
+    Load Vendor Listing Page
+    Wait Until Page Contains Element    //div[contains(@class, 'vendor-container')]
+    ${count}=   Get Matching Xpath Count   xpath=//div[contains(@class, 'vendor-item')]
+    Should Be Equal As Integers     ${count}    ${vendors_seeded_paginated}
+
+    ##Verify Vendors are sorted by ratings
+    Sorted by Ratings
+
+*** Keywords ***
+Load Vendor Listing Page
+    Go To    ${HOME PAGE}
+    Title Should Be    Government Review Platform
+
+Sorted by Ratings
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'aggregate_score')]
+    ${current_value}=   Set Variable   ${max_ratings}
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=    Get Text    ${element}      # will get the text of each matched node
+    \   less than or equal to   ${text}     ${current_value}
+    \   ${current_value}=   Set Variable    ${text}

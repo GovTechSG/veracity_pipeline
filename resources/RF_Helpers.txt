@@ -1,0 +1,544 @@
+*** Settings ***
+Documentation     Variables and keywords that are often needed when testing web apps.
+...
+...               Copyright (C) 2012 Harri Paavola harri.paavola@gmail.com https://github.com/Harri/Robot-Framework-Helpers
+...
+...               Permission is hereby granted, free of charge, to any person obtaining
+...               a copy of this software and associated documentation files (the
+...               "Software"), to deal in the Software without restriction, including
+...               without limitation the rights to use, copy, modify, merge, publish,
+...               distribute, sublicense, and/or sell copies of the Software, and to
+...               permit persons to whom the Software is furnished to do so, subject to
+...               the following conditions:
+...
+...               The above copyright notice and this permission notice shall be included
+...               in all copies or substantial portions of the Software.
+...
+...               THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+...               EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+...               MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+...               IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+...               CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+...               TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+...               SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+*** Variables ***
+${COMMA}          ,
+${DOT}            .
+${HYPHEN}          -
+${NUMBERS}              1234567890
+${SPECIAL_CHARACTERS}    ~`!@#$%^&*()_+=/?.>,<:;"'{[}]|\\"
+@{strings}        qwertASDFG    1234567890    öåÖÅŔÔßÇţű    ВГДЕЗабежз    إبثحذشقغظئ    啊埃鞍肮岸些濡糟貸鳴    *?=)(/&%¤#
+@{MONTHS}         Jan    Feb    Mar    Apr    May    Jun    Jul
+...               Aug    Sep    Oct    Nov    Dec
+
+*** Keywords ***
+Verify Label
+    [Arguments]    ${locator}    ${label}
+    [Documentation]    Verifies that label element identified by locator has tet label.
+    Element Text Should Be    css=label[for=${locator}]    ${label}
+
+Verify Placeholder
+    [Arguments]    ${locator}    ${placeholder}
+    [Documentation]    Verifies that element identified by locator has placeholder attribute with value of placeholder.
+    ${attr}    Get Element Attribute    ${locator}@placeholder
+    Should Be Equal    ${attr}    ${placeholder}
+
+Go To And Verify Page
+    [Arguments]    ${url}    ${title}=${empty}
+    [Documentation]    Navigates the active browser instance to the provided URL.
+    ...    Verifies that current URL is exactly url.
+    ...    Verifies that current page title equals title.
+    Go To    ${url}
+    Location Should Be    ${url}
+    Run Keyword Unless    '${title}'=='${empty}'    Title Should Be    ${title}
+
+Input Text And Verify Field
+    [Arguments]    ${locator}    ${text}    ${label}=${empty}    ${placeholder}=${empty}
+    [Documentation]    Waits until page contain element identified by locator.
+    ...    Types the given text into text field identified by locator.
+    ...    Verifies that proper label element and placeholder attribute are found.
+    ...    Verifes that text field value is what it was set to.
+    Wait Until Page Contains Element    ${locator}
+    Input Text    ${locator}    ${text}
+    Run Keyword Unless    '${label}'=='${empty}'    Verify Label    ${locator}    ${label}
+    Run Keyword Unless    '${placeholder}'=='${empty}'    Verify Placeholder    ${locator}    ${placeholder}
+    ${value}    Get Value    ${locator}
+    Should Be Equal As Strings    ${value}    ${text}
+
+Input Password And Verify Field
+    [Arguments]    ${locator}    ${password}    ${label}=${empty}    ${placeholder}=${empty}
+    [Documentation]    Waits until page contain element identified by locator.
+    ...    Types the given password into text field identified by locator.
+    ...    Verifies that proper label element and placeholder attribute are found.
+    Wait Until Page Contains Element    ${locator}
+    Input Password    ${locator}    ${password}
+    Run Keyword Unless    '${label}'=='${empty}'    Verify Label    ${locator}    ${label}
+    Run Keyword Unless    '${placeholder}'=='${empty}'    Verify Placeholder    ${locator}    ${placeholder}
+
+Select Checkbox And Verify Field
+    [Arguments]    ${id}    ${name}    ${label}=${empty}
+    [Documentation]    Waits until page contain element identified by id.
+    ...    Selects checkbox identified by name.
+    ...    Verifies that proper label element and placeholder attribute are found.
+    ...    Verifies checkbox identified by locator is selected/checked.
+    Wait Until Page Contains Element    ${id}
+    Select Checkbox    ${name}
+    Run Keyword Unless    '${label}'=='${empty}'    Verify Label    ${id}    ${label}
+    Checkbox Should Be Selected    ${name}
+
+Select From List And Verify Field
+    [Arguments]    ${locator}    ${item}    ${label}=${empty}
+    [Documentation]    Selects item from list identified by locator.
+    ...    If label is set, verifies that it is correct.
+    Wait Until Page Contains Element    ${locator}
+    Run Keyword Unless    '${label}'=='${empty}'    Verify Label    ${locator}    ${label}
+    Select From List    ${locator}    ${item}
+
+Generate Random Integer In Range
+    [Arguments]    ${min}=0    ${max}=sys.maxint
+    [Documentation]    Returns random integer between min and max values. Min defaults to 0 and max to maxint.
+    ${int}    Evaluate    random.randint(${min}, ${max})    random,sys
+    [Return]    ${int}
+
+Generate Random Float In Range
+    [Arguments]    ${min}=0    ${max}=sys.maxint    ${round}=2
+    [Documentation]    Returns random float between min and max values. Min defaults to 0 and max to maxint.
+    ${float}    Evaluate    round(random.uniform(${min}, ${max}),${round})    random,sys
+    ${float}=    Convert To String    ${float}
+    #
+    #Element Should Not Contain
+    #    [Arguments]    ${haystack}    ${needle}
+    #    [Documentation]    Verifies that ${needle} is not part of ${haystack}
+    #    Wait Until Page Contains Element    ${haystack}
+    #    ${error message}    Run Keyword And Expect Error    *    Element Should Contain    ${haystack}    ${needle}
+    #    Should Contain    ${error message}    Element '${haystack}' should have contained text '${needle}' but its text was
+    #Wait Until Element Contains
+    #    [Arguments]    ${locator}    ${expected}
+    #    [Documentation]    Waits until specified element contains specified text.
+    #    ...    Timeouts after Selenium Timeout.
+    #    ${timeout}    Get Selenium Timeout
+    #    Wait Until Keyword Succeeds    ${timeout}    1    Element Should Contain    ${locator}    ${expected}
+    #Wait Until Element Does Not Contain
+    #    [Arguments]    ${locator}    ${expected}
+    #    [Documentation]    Waits until specified element does not contain specified text.
+    #    ...    Timeouts after Selenium Timeout.
+    #    ${timeout}    Get Selenium Timeout
+    #    Wait Until Keyword Succeeds    ${timeout}    1    Element Should Not Contain    ${locator}    ${expected}
+    [Return]    ${float}
+
+Run Keyword And Log Warning
+    [Arguments]    ${keyword}    @{arguments}
+    [Documentation]    Runs given keyword with given parameters and logs the error message as a warning.
+    ...    This is useful when some features of the product under test are not yet implemented and you don't want to fail tests because of that.
+    ${error code}    ${error msg}    Run Keyword And Ignore Error    ${keyword}    @{arguments}
+    Log    ${error msg}    WARN
+
+Input Validation For Field
+    [Arguments]    ${field}    ${rest field}    ${value}    ${pass}=pass
+    [Documentation]    Inputs given value to given field.
+    ...    Then focuses to given rest field so that client side input validation is triggered.
+    ...    Then verifies that user is shown or not shown error label as specified in pass argument.
+    Input Text And Verify Field    ${field}    ${value}
+    Focus    ${rest field}
+    Run Keyword If    '${pass}'=='pass'    Element Should Not Be Visible    ${field}_em_
+    Run Keyword Unless    '${pass}'=='pass'    Element Should Be Visible    ${field}_em_
+
+Verify Field Content
+    [Arguments]    ${locator}    ${content}
+    [Documentation]    Verifies that field identified by locator has the same value as speficied by content
+    ${value}    Get Value    ${locator}
+    Should Be Equal As Strings    ${value}    ${content}
+
+Verify Field Content For Floating Numbers
+    [Arguments]    ${locator}    ${content}
+    [Documentation]    Verifies that field identified by locator has the same numeric value as speficied by content
+    ${value}    Get Value    ${locator}
+    ${value}=    Remove String    ${value}    ${COMMA}
+    Should Be Equal As Numbers    ${value}    ${content}
+
+Verify Field Content For Floating Numbers By Get Text
+    [Arguments]    ${locator}    ${content}
+    [Documentation]    Verifies that field identified by locator has the same numeric value as speficied by content
+    ${value}    Get Text    ${locator}
+    ${value}=    Remove String    ${value}    ${COMMA}
+    Should Be Equal As Numbers    ${value}    ${content}
+
+Verify Field Content With Comma
+    [Arguments]    ${id}    ${expected_text}
+    ${actual_text}=    Get Text    ${id}
+    ${actual_text}=    Remove String    ${actual_text}    ${COMMA} 
+    Should Be Equal As Strings    ${expected_text}    ${actual_text}
+
+Click Label
+    [Arguments]    ${label}    ${index}=1
+    [Documentation]    Clicks label element which contains text ${label}.
+    ...    If there is more than one label with given text, specify index to match those labels.
+    Click Element    xpath=(//label[contains(., '${label}')])[${index}]
+
+Click Checkbox Label
+    [Arguments]    ${label}    ${index}=1    ${state}=selected
+    [Documentation]    Clicks given label element.
+    ...    If there are more than one same label, set ${index}.
+    ...    If ${state} is set to 'selected', verifies that checkbox with given label is selected.
+    ...    If ${state} is set to 'not selecte', verifies that checkbox with given label is not selected.
+    Click Label    ${label}    ${index}
+    ${id}    Get Element Attribute    xpath=(//label[contains(., '${label}')])[${index}]@for
+    Run Keyword If    '${state}'=='selected'    Checkbox Should Be Selected    ${id}
+    Run Keyword If    '${state}'=='not selected'    Checkbox Should Not Be Selected    ${id}
+
+Click Radiobutton Label
+    [Arguments]    ${label}    ${group}    ${index}=1    ${state}=selected
+    [Documentation]    Clicks given label element.
+    ...    If there are more than one same label, set ${index}.
+    ...    If ${state} is set to 'selected', verifies that radiobutton with given label is selected.
+    ...    If ${state} is set to 'not selecte', verifies that radiobutton with given label is not selected.
+    Click Label    ${label}    ${index}
+    ${id}    Get Element Attribute    xpath=(//label[contains(., '${label}')])[${index}]@for
+    ${value}    Get Element Attribute    ${id}@value
+    Run Keyword If    '${state}'=='selected'    Radio Button Should Be Set To    ${group}    ${value}
+    Run Keyword If    '${state}'=='not selected'    Radio Button Should Not Be Selected    ${group}    ${value}
+
+Location Should Not Contain
+    [Arguments]    ${string}
+    ${url}    Get Location
+    Should Not Contain    ${url}    ${string}
+
+Get Random Item From List
+    [Arguments]    @{list}
+    [Documentation]    Returns random item from given list
+    ${lenght}    Get Length    ${list}
+    ${item}    Generate Random Integer In Range    0    ${lenght}-1
+    ${item}    Set Variable    @{list}[${item}]
+    [Return]    ${item}
+
+Convert Number To String
+    [Arguments]    ${num}    ${decimal_places}
+    [Documentation]    Returns a number as a string with the number of decimal places (Note: Decimal places are truncated! NOT round up/down!)
+    ${temp_str}=    Convert to String    ${num}
+    @{temp_str1}=    Split String    ${temp_str}    ${DOT}
+    ${temp_str}=    Set Variable    @{temp_str1}[0]
+    ${temp_str}=    Catenate    SEPARATOR=    ${temp_str}    ${DOT}
+    ${decimal_str}=    Get Substring    @{temp_str1}[1]    0    ${decimal_places}
+    ${len}=    Get Length    ${decimal_str}
+    ${missing_zero_count}=    Evaluate    ${decimal_places}-${len}
+    ${temp_str}=    Catenate    SEPARATOR=    ${temp_str}    ${decimal_str}
+    : FOR    ${len}    IN RANGE    0    ${missing_zero_count}
+    \    ${temp_str}=    Catenate    SEPARATOR=    ${temp_str}    0
+    [Return]    ${temp_str}
+
+Extract Rails ID From URL
+    [Arguments]    ${location}
+    @{location}=    Split String    ${location}    /
+    ${rails_id}=    Evaluate    @{location}[4]
+    ${rails_id}=    Convert To String    ${rails_id}
+    [Return]    ${rails_id}
+
+Format Date Time
+    [Arguments]    ${datetime}    ${partial}=${EMPTY}
+    [Documentation]    Format a given date object to the following format:
+    ...    if second argument is empty, then return format is 'dd mmm yyyy hh:mm am/pm' OR
+    ...    else return the format 'dd mmm yyyy'.
+    ${datetime}=    Convert Date    ${datetime}
+    ${yyyy}    ${mm}    ${dd}    ${hh}    ${min}=    Get Time    year,month,day,hour,min
+    ...    ${datetime}
+    ${mm}=    Convert To Integer    ${mm}
+    ${mm}=    Evaluate    ${mm}-1
+    ${hh1}=    Convert To Integer    ${hh}
+    ${ampm}=    Run Keyword If    ${hh1} >= 12    Set Variable    PM
+    ...    ELSE    Set Variable    AM
+    ${hh}=    Run Keyword If    ${hh1} > 12    Evaluate    ${hh1}-12
+    ...    ELSE IF    ${hh1} == 0    Set Variable    12
+    ...    ELSE    Set Variable    ${hh}
+    ${hh1}=    Convert To Integer    ${hh}
+    ${hh}=    Run Keyword If    ${hh1} < 10    Set Variable    0${hh1}
+    ...    ELSE    Set Variable    ${hh}
+    ${return_str}=    Set Variable If    '${partial}'=='${EMPTY}'    ${dd} @{MONTHS}[${mm}] ${yyyy} ${hh}:${min} ${ampm}    ${dd} @{MONTHS}[${mm}] ${yyyy}
+    [Return]    ${return_str}
+
+Generate A Random Date
+    [Arguments]    ${from}=now    ${how_long}=+1y
+    [Documentation]    Return a random date base on the range provided (from till the end):
+    ...    Return format is 'dd Mmm yyyy' and the date object itself so it can be used in need to
+    ${fake_date_obj}=    FakerLibrary.date_time_between    start_date=${from}    end_date=${how_long}
+    ${fake_date}=    Convert To String    ${fake_date_obj}
+    ${fake_date}=    Format Date Time As Per Definition    ${fake_date}    False    %d %b %Y
+    [Return]    ${fake_date}    ${fake_date_obj}
+
+Generate date after today
+    [Arguments]    ${how_long}
+    [Documentation]    Return a date after days mentioned from today
+    ...    Return format is 'dd Mmm yyyy' and the date object itself so it can be used in need to
+    ${from_date}=    Get Current Date
+    ${date} =    Add Time To Date    ${from_date}    ${how_long} days
+    ${date_new}=    Convert To String    ${date}
+    ${date_new} =    Convert Date    ${date_new}    result_format=%d %b %Y
+    [Return]    ${date_new}
+
+Generate Two Random Date With Specific Duration
+	[Arguments]    ${from}=now    ${how_long}=+1y    ${duration}=1
+    [Documentation]    Return two random date base on the range and duration provided (from till the end):
+    ...    Return format is 'dd Mmm yyyy' and the date object itself so it can be used in need to
+	${fake_date_obj}=    FakerLibrary.date_time_between    start_date=${from}    end_date=${how_long}
+    ${fake_date}=    Convert To String    ${fake_date_obj}
+	${date}=	Add Time To Date	${fake_date}	${duration} days
+    ${date_new}=    Convert To String    ${date}
+    ${date_new}=	Convert Date	${date_new}	result_format=%d %b %Y
+	${fake_date}=    Format Date Time As Per Definition    ${fake_date}    False    %d %b %Y
+	[Return]    ${fake_date}    ${date_new}
+
+Generate Random Text
+    [Arguments]    ${length}
+    [Documentation]    For length <= 42, dont append special characters and numbers.
+
+    ${random}=    Evaluate    ${length} - 42
+    ${random}=    Set Variable If    ${length} > 42    ${random}    ${length}
+
+    ${text}=    Generate Random String    ${random}
+
+    #painful to do conditional in robot
+    ${text_catenate}=    Catenate   SEPARATOR=    ${text}    ${SPECIAL_CHARACTERS}
+    ${text}=    Set Variable If    ${length} > 42    ${text_catenate}    ${text}
+
+    ${text_catenate}=    Catenate   SEPARATOR=    ${text}    ${NUMBERS}
+    ${text}=    Set Variable If    ${length} > 42    ${text_catenate}    ${text}
+
+    [Return]    ${text}
+
+Generate Random Paragraph
+    ${text}=    FakerLibrary.paragraph
+    ${text}=    Catenate   SEPARATOR=    ${text}    ${SPECIAL_CHARACTERS}
+    [Return]    ${text}
+
+Two TextBox Values Should Be Equal
+    [Arguments]    ${id1}    ${id2}
+    ${value1}=    Get Value    ${id1}
+    ${value2}=    Get Value    ${id2}
+    Should Be Equal As Strings    ${value1}    ${value2}
+
+Verify Text Equals
+    [Arguments]    ${id}    ${expected_text}
+    ${actual_text}=    Get Text    ${id}
+    Should Be Equal As Strings    ${expected_text}    ${actual_text}
+
+Verify Currency Value Equals
+    [Arguments]    ${select_id}    ${expected_text}
+    ${id}=    Set Variable    select2-${select_id}-container
+    Element Text Should Be    ${id}    ${expected_text}
+
+Verify Value Equals
+    [Arguments]    ${id}    ${expected_text}
+    ${actual_text}=    Get Value    ${id}
+    Should Be Equal As Strings    ${expected_text}    ${actual_text}
+
+Compute Project Duration
+    [Arguments]    ${from_date}    ${to_date}
+    ${days_difference}=    Subtract Date From Date    ${to_date}    ${from_date}    result_format=compact    exclude_millis=False    date1_format=%d %b %Y
+    ...    date2_format=%d %b %Y
+    ${days_difference}=    Remove String    ${days_difference}    d
+    ${days_difference}=    Convert To Integer    ${days_difference}
+    ${months_diff}=    Evaluate    ${days_difference} / 30
+    ${days_diff}=    Evaluate    ${days_difference} % 30
+    ${return_string}=    Catenate    ${months_diff}    Months
+    ${return_string}=    Catenate    ${return_string}    ${days_diff}
+    ${return_string}=    Catenate    ${return_string}    Days
+    [Return]    ${return_string}
+
+Verify Fields Are Disabled
+    [Arguments]    ${element_list}
+    : FOR    ${element}    IN    @{element_list}
+    \    Element Should Be Disabled    ${element}
+
+Verify Fields Are Enabled
+    [Arguments]    ${element_list}
+    : FOR    ${element}    IN    @{element_list}
+    \    Element Should Be Enabled    ${element}
+
+Verify Fields Are Not Visible
+    [Arguments]    ${element_list}
+    : FOR    ${element}    IN    @{element_list}
+    \    Element Should Not Be Visible    ${element}
+
+Verify Fields Are Empty
+    [Arguments]    ${element_list}
+    : FOR    ${element}    IN    @{element_list}
+    \    Verify Text Equals    ${element}    ${EMPTY}
+
+Verify The Maximum Length
+    [Arguments]    ${element_list}    ${expected_max}
+    : FOR    ${element}    IN    @{element_list}
+    \    ${actual_max}=    Get Element Attribute    ${element}@maxlength
+    \    Should Be Equal As Strings    ${expected_max}    ${actual_max}
+
+Click
+    [Arguments]    ${id}
+    Wait Until Element Is Visible    ${id}
+    #Move Focus To Element Position    ${id}
+    Click Element    ${id}
+
+Multiple Clicks
+    [Arguments]    ${id}
+    [Documentation]    To Click on multiple ids on same page.
+    : FOR    ${click_id}    IN    @{id}
+    \    Wait Until Element Is Visible    ${click_id}
+    \    Focus    ${click_id}
+    \    Sleep    1s
+    \    Click Element    ${click_id}
+    \    Sleep    1s
+
+Verify Attribute Equals
+    [Arguments]    ${element_id}    ${attribute}    ${expected_value}
+    ${actual_value}=    Get Element Attribute    ${element_id}@${attribute}
+    Should Be Equal As Strings    ${actual_value}    ${expected_value}
+
+Type
+    [Arguments]    ${element_list_id}    ${value}    ${length}=${1}    ${type}=${0}
+    @{data_List}=    Create List
+    : FOR    ${element_id}    IN    @{element_list_id}
+    \    Wait Until Element Is Visible    ${element_id}
+    \    Input Text    ${element_id}    ${EMPTY}
+    \    ${data}=    Generate Random Data    ${length}    ${type}    ${value}
+    \    Append To List    ${data_List}    ${data}
+    \    Input Text    ${element_id}    ${data}
+    [Return]    ${data_List}
+
+Verify No Error
+    [Arguments]    ${id}    ${msg}
+    Verify Error Field is not present    ${id}
+    Verify Message is not present    ${msg}
+
+Verify Error Field is not present
+    [Arguments]    ${id}
+    Page Should Not Contain Element    ${id}-alert
+
+Verify Message is not present
+    [Arguments]    ${msg}
+    Page Should Not Contain    ${msg}
+
+Verify Field Error Message
+    [Arguments]    ${id}    ${mesg}
+    Wait Until Page Contains Element    ${id}-alert
+    Element Text Should Be    ${id}-alert    ${mesg}
+
+Verify Error Message
+    [Arguments]    ${element_id}    ${expected_error_message}
+    Wait Until Page Contains Element    ${element_id}
+    Element Text Should Be    ${element_id}    ${expected_error_message}
+
+Verify Error Message for ID List
+    [Arguments]    ${element_list_id}    ${expected_error_message}
+    : FOR    ${element_id}    IN    @{element_list_id}
+    \    Element Text Should Be    ${element_id}    ${expected_error_message}
+
+# this is almost the same as Verify Error Message for ID List
+Verify Error Messages
+    [Arguments]    ${element_list_id}    ${expected_error_message}
+    : FOR    ${element_id}    IN    @{element_list_id}
+    \    Wait Until Page Contains Element    xpath=${element_id}
+    \    ${actual_error_message}=    Get Text    xpath=${element_id}
+    \    Log    ${expected_error_message}
+    \    Log    ${actual_error_message}
+    \    Should Be Equal As Strings    ${actual_error_message}    ${expected_error_message}
+
+Verify Field Error Message for ID List
+    [Arguments]    ${element_list_id}    ${expected_error_message}
+    : FOR    ${element_id}    IN    @{element_list_id}
+    \    Element Text Should Be    ${element_id}-alert    ${expected_error_message}
+
+Verify No Error Fields
+    [Arguments]    ${element_list_id}
+    : FOR    ${element_id}    IN    @{element_list_id}
+    \    Page Should Not Contain Element    ${element_id}-alert
+
+Type Into Single Field
+    [Arguments]    ${id}    ${value}
+    Wait Until Element Is Visible    ${id}
+    Input Text    ${id}    ${EMPTY}
+    Sleep    0.25s
+    Input Text    ${id}    ${value}
+    Sleep    0.5s
+    Press Key    ${id}    ${HOR_TAB_KEY_ASCII}
+
+Type Into Field And Press Enter
+    [Arguments]    ${id}    ${value}
+    Wait Until Element Is Visible    ${id}
+    Input Text    ${id}    ${EMPTY}
+    Sleep    0.25s
+    Input Text    ${id}    ${value}
+    Sleep    0.5s
+    Press Key    ${id}    ${ENTER_KEY_ASCII}
+
+
+Type Into String Field
+    [Arguments]    ${id}    ${value}
+    Wait Until Element Is Visible    ${id}
+    ${length}=    Get Length    ${value}
+    Sleep    0.5s
+    Run Keyword If    ${length} < 20    Input Text    ${id}    ${value}
+    ...    ELSE    Input Fast Text   ${id}    ${value}
+    Sleep    0.5s
+
+Input Fast Text
+    [Arguments]    ${id}    ${value}
+    ${repeat}=    input_text_tweak    ${id}    ${value}
+
+Select
+    [Arguments]    ${id}    ${value}
+    Wait Until Element Is Visible    ${id}
+    Select From List By Label    ${id}    ${value}
+
+Prepare Id Data Dictionary
+    [Arguments]    ${id_list}    ${data_list}    ${id_data_dictionary}
+    ${dict_len}=    Get Length    ${id_data_dictionary}
+    Return From Keyword If    ${id_data_dictionary}==[]
+    ${len}=    Get Length    ${data_list}
+    : FOR    ${index}    IN RANGE    0    ${len}
+    \    ${id}=    Get From List    ${id_list}    ${index}
+    \    ${data}=    Get From List    ${data_list}    ${index}
+    \    Set To Dictionary    ${id_data_dictionary}    ${id}    ${data}
+    [Return]    ${id_data_dictionary}
+
+Check for Multiple Elements
+    [Arguments]    ${element_id}
+    : FOR    ${e_id}    IN    @{element_id}
+    \    Page Should Contain Element    ${e_id}
+
+Check for Multiple Text Fields
+    [Arguments]    ${element_id}
+    : FOR    ${e_id}    IN    @{element_id}
+    \    Page Should Contain Textfield    ${e_id}
+
+Type Into Currency Field
+    [Arguments]     ${amount_id}    ${amount}    ${code_id}=${EMPTY}    ${code}=SGD    ${rate_id}=${EMPTY}    ${rate}=1
+    Run Keyword If    '${code_id}'<>'${EMPTY}'    Select From List By Value    ${code_id}    ${code}
+    Type Into Single Field    ${amount_id}    ${amount}
+    Run Keyword If    '${rate_id}'<>'${EMPTY}' and '${code}'<>'SGD'    Input Text    ${rate_id}    ${rate}
+
+Verify Text For Disabled Text Area
+	[Arguments]      ${xpath}    ${expected_text}
+	#set test variable  ${var}    //*[text()='Please provide information about your company.']/../following-sibling::div//textarea/following-sibling::div
+    ${node_text}=    execute javascript  return document.evaluate("${xpath}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.innerHTML
+    Should Be Equal As Strings    ${node_text}    ${expected_text}
+
+Count No of Radio Button Under Element with the specified Value
+    [Arguments]      ${xpath}    ${value}
+    ${count}=    Get Matching Xpath Count    ${xpath}//*[@role='radiogroup']
+    ${count}=    convert to integer  ${count}
+    ${valuecount}=     set variable   ${0}
+    : FOR    ${index}     IN RANGE    1     ${count+1}
+    \    ${name}=    Get Element Attribute     xpath=(${xpath}//*[@role='radiogroup'])[${index}]@aria-labelledby
+    \    ${name}=    set variable     ${name}-radio
+    \    ${test}=   get_value_of_radio_group    ${name}
+    \    #${status}=     run keyword and return status     Radio Button Should Be Set to     ${name}     ${value}
+    \    ${valuecount}=    set variable if    '${test}'=='${value}'      ${valuecount+1}     ${valuecount}
+    [Return]    ${valuecount}
+
+Appian Radio Button should be Set To
+    [Arguments]      ${xpath}    ${value}
+    ${name}=    Get Element Attribute     xpath=${xpath}@aria-labelledby
+    ${name}=    set variable     ${name}-radio
+    Radio Button Should Be Set to     ${name}     ${value}
+
+
+

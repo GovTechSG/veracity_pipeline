@@ -1,0 +1,258 @@
+*** Settings ***
+Documentation     A resource file with reusable keywords and variables.
+...
+...               The system specific keywords created here form our own
+...               domain specific language. They utilize keywords provided
+...               by the imported Selenium2Library.
+Library           Selenium2Library
+Library           FakerLibrary
+Library           DatabaseLibrary
+Library           DateTime
+Library           Collections
+Library           String
+Library           OperatingSystem
+Library           ../utility/UtilitiesLibrary.py
+Resource          ../resources/RF_Helpers.txt
+
+
+*** Variables ***
+####################
+# Server Variables #
+####################
+${SERVER}         Actual value set dynamically at test execution
+${BROWSER}        Firefox
+#${WINDOWS}        ${EMPTY}
+${ENVIRONMENT}    DEV    # Default to DEV env. Other value could be CI or QA.
+${DB_SERVER}      localhost
+${DB_PORT}        5432
+${DB_USER}        Postgres
+${DB_NAME}        Postgres
+${DB_PWD}         
+${DB_CONN_STR}    '${DB_SERVER}:${DB_PORT}/${DB_NAME}'
+${DELAY}          0
+${HOME PAGE}      http://${SERVER}
+#${HOME PAGE}      https://${SERVER}
+#${FULL_PATH_DEV_DB}    /Users/gds/git/bgp_frontend/db/development.sqlite3    # Full path to the development DB
+#${FULL_PATH_DEV_DB}    bgp_react_dev    # New PostgreSQL database for local machine
+${FAILED_ERR_MSG}    Failed
+
+#########################
+# Common Error Messages #
+#########################
+
+##########
+# Others #
+##########
+${PAGE_FOOTER}    Copyright 2015
+@{VALID_EMAILS}    foobar@example.com    foobar@bar.example    foo+bar@example.com    foo\bar@example.com    foo*bar@example.com    foo_bar@example.com    foo/bar=xyzzy@example.com
+...               $fobar@example.com    !foo!bar%xyzzy@example.com    foo.bar@example.com
+@{INVALID_EMAILS}    foobar    foo@bar    @foobar    me@    @me.com    .me@example.com    me\@example.com
+${ALPHABETS}      ${0}
+${NUMERIC}        ${1}
+${ALPHANUMERIC}    ${2}
+${ENTER_KEY_ASCII}    \\13
+${HOR_TAB_KEY_ASCII}    \\9
+${BACKSPACE_KEY_ASCII}    \\8
+
+###############
+# Login page #
+##############
+
+*** Keywords ***
+Capture Snapshot
+    [Arguments]    ${prefix}=debug
+    ${index}=    Get Variable Value    ${index}    ${0}
+    Set Global Variable    ${index}    ${index.__add__(1)}
+    Capture Page Screenshot    bgp-${prefix}-${index}.png
+
+Initialise Basic Test Suite
+    Set Selenium Timeout    10 seconds
+
+Initialise ROR Test Suite
+    Initialise Basic Test Suite
+    Open Browser to Home Page
+
+Teardown Test Suite
+    [Arguments]    ${CloseBrowser}=${EMPTY}
+    # time to capture screenshot
+    Sleep    3s
+    Run Keyword And Ignore Error    Disconnect From Database
+    Run Keyword If    '${CloseBrowser}'=='${EMPTY}'    Close All Browsers
+
+Teardown Test Suite Without Alert
+    [Arguments]    ${CloseBrowser}=${EMPTY}
+    # time to capture screenshot
+    Sleep    3s
+    #Logout From BGP Without Alert
+    Run Keyword And Ignore Error    Disconnect From Database
+    Run Keyword If    '${CloseBrowser}'=='${EMPTY}'    Close All Browsers
+
+Teardown Test Suite End To End
+    [Arguments]    ${CloseBrowser}=${EMPTY}
+    #Disconnect From Database
+    # time to capture screenshot
+    Sleep    3s
+    Run Keyword If    '${CloseBrowser}'=='${EMPTY}'    Close All Browsers
+
+Open Browser To Login Page
+    Open The Browser    ${HOME PAGE}    ${BROWSER}
+    Maximize Browser Window
+    Set Selenium Speed    ${DELAY}
+    Login Page Should Be Open
+
+Open Browser to Home Page
+    Open The Browser    ${HOME PAGE}    ${BROWSER}
+    #Maximize Browser Window
+
+    Set Selenium Speed    ${DELAY}
+    #Title Should Be    Enter your username and password
+
+Open The Browser
+    [Arguments]    ${URL}    ${BROWSER}
+    ${chrome_options}=   Run Keyword If    '${BROWSER}'=='chrome'    Set Chrome Options
+    Run Keyword If    '${BROWSER}'=='chrome'    Create Webdriver    Chrome    chrome_options=${chrome_options}
+    Run Keyword If    '${LOCAL_RUN}'=='Yes' and '${BROWSER}'=='chrome'    Go To    ${URL}
+    ...    ELSE        Open Browser    ${URL}    ${BROWSER}
+    Run Keyword Unless    '${BROWSER}'=='chrome'    Maximize Browser Window
+    Run Keyword Unless    '${LOCAL_RUN}'=='Yes'    Open Browser    ${URL}    ${BROWSER}    None    ${GRID_URL}
+    ...    browserName:${BROWSER},platform:${PLATFORM}
+
+Logout From BGP Without Alert
+    Click    logout-button
+    Sleep    1s
+    Wait Until Element Is Visible     //*[@id='login-button']
+    #Check if the Sentinmeter Overlay is activated
+    ${feedback}=    run keyword and return status   Element should be visible    //div[@id='emoji-container']
+    Run Keyword if     '${feedback}'=='True'    run keywords
+    ...   click element at coordinates  //div[@class="feedback-overlay sm-show"]    -200    -200
+    ...   AND    Wait Until Element Is not visible    //div[@id='emoji-container']
+
+Login To BGP
+    [Arguments]    ${role}
+    Click    login-button
+    Wait Until Page Contains Element      //select[@name='SAMLart']
+    Select From List By Value    //select[@name='SAMLart']    ${role}
+    Submit Form
+    Wait Until Page Contains Element    //h3[text()='My Applications']
+
+Logout From BGP
+    #Click    //*[@id="bgp-navbar-collapse"]/ul/li[3]/form/input[2]
+    #Submit Form
+    #Choose Ok On Next Confirmation
+    Click    logout-button
+    Verify and Dismiss The Alert
+    #Confirm Action
+
+    Sleep    1s
+    Wait Until Element Is Visible     //*[@id='login-button']
+    #Check if the Sentinmeter Overlay is activated
+    ${feedback}=    run keyword and return status  element should be visible    //div[@id='emoji-container']
+    Run Keyword if     '${feedback}'=='True'    run keywords
+    ...   click element at coordinates  //div[@class="feedback-overlay sm-show"]    -200    -200
+    ...   AND    Wait Until Element Is not visible    //div[@id='emoji-container']
+
+Login Page Should Be Open
+    Title Should Be    Business Grants Portal
+
+Go To Login Page
+    Go To    ${LOGIN URL}
+    Login Page Should Be Open
+
+Go To Home Page
+    Go To    ${HOME PAGE}
+    Login Page Should Be Open
+
+Input Username
+    [Arguments]    ${username}
+    Input Text    username_field    ${username}
+
+Input Password
+    [Arguments]    ${password}
+    Input Text    password_field    ${password}
+
+Submit Credentials
+    Click Button    login_button
+
+Connect to ROR Database
+    Run Keyword If    '${ENVIRONMENT}'=='CI' or '${ENVIRONMENT}'=='QA' or '${ENVIRONMENT}'=='MASTER'    Connect To Database Using Custom Params    ${DBAPIMODULENAME}    ${DB_USER},${DB_PWD},${DB_CONN_STR}
+    #Run Keyword If    '${ENVIRONMENT}'=='DEV'    Connect To Database Using Custom Params    psycopg2    database='${FULL_PATH_DEV_DB}'
+
+Page Should Contain Error Messages
+    [Arguments]    ${LIST_TO_DISPLAY}
+    [Documentation]    This keyword accepts a list of error messages and check against the current page for \ displaying these error mesages.
+    ${list_count}=    Get Length    ${LIST_TO_DISPLAY}
+    Return From Keyword if    ${list_count}==0
+    : FOR    ${id}    IN RANGE    ${list_count}
+    \    ${ERR_MSG}    Get From List    ${LIST_TO_DISPLAY}    ${id}
+    \    Page Should Contain    ${ERR_MSG}
+
+Page Should Not Contain Error Messages
+    [Arguments]    ${LIST_NOT_TO_DISPLAY}
+    [Documentation]    This keyword accepts a list of error messages and check that the current page does not display these error mesages.
+    ${list_count}=    Get Length    ${LIST_NOT_TO_DISPLAY}
+    Return From Keyword if    ${list_count}==0
+    : FOR    ${id}    IN RANGE    ${list_count}
+    \    ${ERR_MSG}    Get From List    ${LIST_NOT_TO_DISPLAY}    ${id}
+    \    Page Should Not Contain    ${ERR_MSG}
+
+Upload File Attachment
+    [Arguments]    ${element_id}
+    ${file_number}=    Generate Random Integer In Range    0    ${FILES_TO_UPLOAD_COUNT}
+    ${random_file}=    Set Variable    @{FILES_TO_UPLOAD}[${file_number}]
+    #Run Keyword If    '${WINDOWS}'<>'${EMPTY}'    Choose File    ${element_id}    ${FILE_PATH}/${random_file}
+    #Run Keyword If    '${WINDOWS}'=='${EMPTY}'    Choose File    ${element_id}    ${FILE_PATH}/${random_file}
+    Choose File    ${element_id}    ${EXECDIR}${/}${FILE_PATH}${/}${random_file}
+    Sleep    ${DATA_LOAD_TIME}
+    Wait Until Page Contains    ${random_file}    timeout=60s
+    [Return]    ${random_file}
+
+Compare XPath and Text Value
+    [Arguments]    ${XPATH_VALUE_TWO_DIMENSIONAL_LIST}
+    ${size}=    Get Length    ${XPATH_VALUE_TWO_DIMENSIONAL_LIST[0]}
+    Log    ${size}
+    : FOR    ${i}    IN RANGE    0    ${size}
+    \    ${value}=    Get Text    ${XPATH_VALUE_TWO_DIMENSIONAL_LIST [1][${i}]}
+    \    Should Contain    ${value}    ${XPATH_VALUE_TWO_DIMENSIONAL_LIST [0][${i}]}
+    \    Log    ${XPATH_VALUE_TWO_DIMENSIONAL_LIST [1][${i}]}
+    \    Log    ${XPATH_VALUE_TWO_DIMENSIONAL_LIST [0][${i}]}
+
+Verify and Dismiss The Alert
+    Sleep    1s
+    Alert Should Be Present
+    Sleep    2s
+
+Replace Sep With Sept
+    [Arguments]    ${date}
+    ${date_new}=    Replace String    ${date}    Sep    Sept
+    [Return]    ${date_new}
+
+Generate Random Float With Two Decimal
+    [Arguments]    ${min}    ${max}    ${round}=2
+    [Documentation]    Returns random float between min and max values. Min defaults to 0 and max to maxint.
+    ${float}    Evaluate    round(random.uniform(${min}, ${max}),${round})    random,sys
+    ${float}=    Convert to Number    ${float}    2
+    ${float}=    Convert To String    ${float}
+    [Return]    ${float}
+
+Generate Negative sign or Postive for numbers
+    [Documentation]    Returns either a minus sign or nothing
+    ${gen}    Evaluate    random.randint(0, 1)    random,sys
+    Set Test Variable    ${sign}    ${EMPTY}
+    #Log to Console    ${gen}
+    Run Keyword If    '${gen}'=='1'    Set Test Variable    ${sign}    -
+    [Return]    ${sign}
+
+Open URL in Chrome
+    [Documentation]    This keyword replaces our old 'Open The Browser' keyword (may be still used in other grants).
+    ...                It will open Chrome with several options defined in our Utilitieslibrary.
+    [Arguments]    ${url}
+
+    ${chrome_options}=    Set Chrome Options
+    Create Webdriver    Chrome    chrome_options=${chrome_options}
+    Go To    ${url}
+
+Wait for End To End Communication
+    [Arguments]  ${time}=120s
+    Close Browser
+    Log To Console    Waiting ${time} for End To End Communication...
+    Sleep    ${time}

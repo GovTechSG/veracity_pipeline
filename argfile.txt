@@ -1,0 +1,33 @@
+# variables to set correctly before any test (e.g. SERVER:bgp.ida-gds-demo.com / bgp-ci.ida-gds-demo.com / localhost:5000)
+--variable SERVER:localhost:5000
+--variable BROWSER:chrome
+--variable ENVIRONMENT:DEV
+--variable LOCAL_RUN:Yes
+# ROR CI Data Base Detail
+# --variable DB_SERVER:10.3.26.102
+# --variable DB_NAME:BGPCI
+# --variable DB_USER:'bgp_ci'
+# --variable DB_PWD:'Oracle123'
+#Comment    ROR Dev Data Base Detail
+--variable DB_SERVER:localhost
+--variable DB_NAME:postgres
+--variable DB_USER:postgres
+--variable DB_PWD:
+#Comment    ROR QA Data Base Detail
+#--variable DB_SERVER:172.31.7.188
+#--variable DB_NAME:REACTQA
+#--variable DB_USER:'gds_bgp_qa01'
+#--variable DB_PWD:'iloveida'
+
+# output dir to store the test logs (e.g. /root/robot/demo/results)
+--outputdir ./robot/results
+
+# exclude test cases with these tagging
+--exclude skip
+--exclude bug
+
+
+# to set the order of executions
+--name GRP
+
+  test-suites/Vendor_Listing_Workflow.txt
