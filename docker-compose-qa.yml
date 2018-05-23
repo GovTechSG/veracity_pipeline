@@ -23,7 +23,8 @@ services:
     env_file:
       - qa.env
   frontend:
-    image: wynn987/govt-review-frontend
+    image: wynn987/govt-review-frontend-deploy
+    entrypoint: "docker/docker-entrypoint-qa.sh"
     ports:
       - "5000:5000"
     volumes:
