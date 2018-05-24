@@ -803,11 +803,11 @@ def get_value_of_radio_group(groupname):
 
     return value
 
-def less_than_or_equal_to(x, y):
-    return x <= y
+def numeric_less_than_or_equal_to(x, y):
+    return int(x) <= int(y)
 
-def greater_than_or_equal_to(x, y):
-    return x >= y
+def numeric_greater_than_or_equal_to(x, y):
+    return int(x) >= int(y)
 
 def calculate_claim_expiry_date(string_datetime):
 
@@ -821,7 +821,3 @@ def calculate_claim_expiry_date(string_datetime):
     struct_datetime = struct_datetime + relativedelta(months=+3)
 
     return struct_datetime.strftime("%d %b %Y")
-
-
-
-
