@@ -62,7 +62,8 @@ Sorted by Ratings
     ${current_value}=   Set Variable   ${max_ratings}
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
-    \   less than or equal to   ${text}     ${current_value}
+    \   ${result}=      Numeric less than or equal to   ${text}     ${current_value}
+    \   Should Be True     ${result}
     \   ${current_value}=   Set Variable    ${text}
 
 Click Newly Added
