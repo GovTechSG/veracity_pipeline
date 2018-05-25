@@ -25,8 +25,8 @@ ${BROWSER}        Firefox
 ${ENVIRONMENT}    DEV    # Default to DEV env. Other value could be CI or QA.
 ${DB_SERVER}      localhost
 ${DB_PORT}        5432
-${DB_USER}        Postgres
-${DB_NAME}        Postgres
+${DB_USER}        
+${DB_NAME}        product-review-platform_development
 ${DB_PWD}         
 ${DB_CONN_STR}    '${DB_SERVER}:${DB_PORT}/${DB_NAME}'
 ${DELAY}          0
