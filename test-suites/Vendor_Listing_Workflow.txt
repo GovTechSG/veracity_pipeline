@@ -3,15 +3,23 @@ Documentation     *Objectives:*
 ...               To Validate the Vendor Listing End To End Work Flow
 ...               1. Backend to Frontend for Vendor Listing Index
 
-Suite Setup       Initialise ROR Test Suite
-Suite Teardown    Teardown Test Suite Without Alert
+Suite Setup       Suite Setup
+Suite Teardown    Suite Teardown
 Force Tags        vendor_listing_workflows    end-to-end    1
 Resource          ../resources/resource.txt
+Library           DatabaseLibrary
+Library           OperatingSystem
+Library           Collections
 
 *** Variables ***
 ${vendor_list}    ${EMPTY}
 ${vendors_seeded_paginated}     ${10}
 ${max_ratings}      ${100}
+${DBHost}         'localhost'
+${DBName}         'product-review-platform_development'
+${DBPass}         ""
+${DBPort}         5432
+${DBUser}         ""
 
 *** Test Cases ***
 [View by Best Ratings] List Vendors by Best Ratings
@@ -28,7 +36,23 @@ ${max_ratings}      ${100}
     ##Verify Vendors are sorted by ratings
     Sorted by Ratings
 
+[View by Newly Added] List Vendors by Newly Added
+
+    ##Click Newly Added
+    Click Newly Added
+
+    ##Verify Vendors are sorted by created_at
+    Sorted by Newly Added
+
 *** Keywords ***
+Suite Setup
+    Initialise ROR Test Suite
+    Connect To Database Using Custom Params     psycopg2    database=${DBName}, user=${DBUser}, password=${DBPass}, host=${DBHost}, port=${DBPort}
+
+Suite Teardown
+    Disconnect From Database
+    Teardown Test Suite Without Alert
+
 Load Vendor Listing Page
     Go To    ${HOME PAGE}
     Title Should Be    Government Review Platform
@@ -40,3 +64,21 @@ Sorted by Ratings
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
     \   less than or equal to   ${text}     ${current_value}
     \   ${current_value}=   Set Variable    ${text}
+
+Click Newly Added
+    Click Element   id:newly_added
+    Sleep   5
+
+Sorted by Newly Added
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'vendor-name')]
+    ${elements from db}=    Query     SELECT name FROM public.companies WHERE discarded_at IS NULL ORDER BY created_at DESC
+    ${index}=    Set Variable    0
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=        Get Text    ${element}
+    \   ${db_element}=     Get From List       ${elements from db}     ${index}
+    \   ${db_text}=     Get From List       ${db_element}     0    
+    \   Should Be Equal     ${text}     ${db_text}
+    \   ${index}=       Evaluate    ${index}+1
+    
+
+    

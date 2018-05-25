@@ -9,10 +9,10 @@
 # --variable DB_USER:'bgp_ci'
 # --variable DB_PWD:'Oracle123'
 #Comment    ROR Dev Data Base Detail
---variable DB_SERVER:localhost
---variable DB_NAME:postgres
---variable DB_USER:postgres
---variable DB_PWD:
+--variable DB_SERVER:'localhost'
+--variable DB_NAME:'product-review-platform_development'
+--variable DB_USER:''
+--variable DB_PWD:''
 #Comment    ROR QA Data Base Detail
 #--variable DB_SERVER:172.31.7.188
 #--variable DB_NAME:REACTQA
