@@ -82,7 +82,7 @@ Click Newly Added
     Sleep   5
 
 Click Next Page
-    Click Element   xpath://a[contains(text(),'⟩')]
+    Click Element   xpath://a[contains(text(),'NEXT')]
 
 Sorted by Newly Added
     ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'vendor-name')]
