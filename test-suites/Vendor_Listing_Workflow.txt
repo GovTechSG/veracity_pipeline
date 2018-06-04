@@ -13,7 +13,7 @@ Library           Collections
 
 *** Variables ***
 ${vendor_list}    ${EMPTY}
-${vendors_seeded_paginated}     ${10}
+${vendors_seeded_paginated}     ${5}
 ${max_ratings}      ${100}
 ${DBHost}         'localhost'
 ${DBName}         'product-review-platform_development'
@@ -58,8 +58,18 @@ Load Vendor Listing Page
     Title Should Be    Government Review Platform
 
 Sorted by Ratings
-    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'aggregate_score')]
     ${current_value}=   Set Variable   ${max_ratings}
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'aggregate_score')]
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=    Get Text    ${element}      # will get the text of each matched node
+    \   ${result}=      Numeric less than or equal to   ${text}     ${current_value}
+    \   Should Be True     ${result}
+    \   ${current_value}=   Set Variable    ${text}
+
+    Click Next Page
+    Sleep   5
+
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'aggregate_score')]
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
     \   ${result}=      Numeric less than or equal to   ${text}     ${current_value}
@@ -67,8 +77,12 @@ Sorted by Ratings
     \   ${current_value}=   Set Variable    ${text}
 
 Click Newly Added
+    Sleep   2
     Click Element   id:newly_added
     Sleep   5
+
+Click Next Page
+    Click Element   xpath://a[contains(text(),'NEXT')]
 
 Sorted by Newly Added
     ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'vendor-name')]
@@ -80,6 +94,13 @@ Sorted by Newly Added
     \   ${db_text}=     Get From List       ${db_element}     0    
     \   Should Be Equal     ${text}     ${db_text}
     \   ${index}=       Evaluate    ${index}+1
-    
 
-    
+    Click Next Page
+    Sleep    5
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'vendor-name')]
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=        Get Text    ${element}
+    \   ${db_element}=     Get From List       ${elements from db}     ${index}
+    \   ${db_text}=     Get From List       ${db_element}     0    
+    \   Should Be Equal     ${text}     ${db_text}
+    \   ${index}=       Evaluate    ${index}+1
