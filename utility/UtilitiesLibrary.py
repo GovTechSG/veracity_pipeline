@@ -809,6 +809,9 @@ def numeric_less_than_or_equal_to(x, y):
 def numeric_greater_than_or_equal_to(x, y):
     return int(x) >= int(y)
 
+def db_count_to_int(query_count):
+    return int(query_count[0][0])
+
 def calculate_claim_expiry_date(string_datetime):
 
     myindex = string_datetime.find('.')

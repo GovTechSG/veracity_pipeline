@@ -5,6 +5,7 @@ Documentation     *Objectives:*
 
 Suite Setup       Suite Setup
 Suite Teardown    Suite Teardown
+Test Setup        Go To    ${HOME PAGE}
 Force Tags        vendor_listing_workflows    end-to-end    1
 Resource          ../resources/resource.txt
 Library           DatabaseLibrary
@@ -20,6 +21,10 @@ ${DBName}         'product-review-platform_development'
 ${DBPass}         ""
 ${DBPort}         5432
 ${DBUser}         ""
+${search_value}   o
+${search_query}   '%o%'
+${filter_value}   Agriculture
+${ENTER_KEY}      \\13 
 
 *** Test Cases ***
 [View by Best Ratings] List Vendors by Best Ratings
@@ -29,7 +34,7 @@ ${DBUser}         ""
 
     ##Retrieve Vendors from Backend
     Load Vendor Listing Page
-    Wait Until Page Contains Element    //div[contains(@class, 'vendor-container')]
+    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
     ${count}=   Get Matching Xpath Count   xpath=//div[contains(@class, 'vendor-item')]
     Should Be Equal As Integers     ${count}    ${vendors_seeded_paginated}
 
@@ -44,6 +49,14 @@ ${DBUser}         ""
     ##Verify Vendors are sorted by created_at
     Sorted by Newly Added
 
+[Search by Name] Search Vendors by Name
+
+    Click Search
+
+[Filter by Industries] Filter Vendors by Industries
+
+    Click Filter
+
 *** Keywords ***
 Suite Setup
     Initialise ROR Test Suite
@@ -54,7 +67,6 @@ Suite Teardown
     Teardown Test Suite Without Alert
 
 Load Vendor Listing Page
-    Go To    ${HOME PAGE}
     Title Should Be    Government Review Platform
 
 Sorted by Ratings
@@ -82,6 +94,7 @@ Click Newly Added
     Sleep   5
 
 Click Next Page
+    Wait Until Page Contains Element    xpath://a[contains(text(),'NEXT')]
     Click Element   xpath://a[contains(text(),'NEXT')]
 
 Sorted by Newly Added
@@ -104,3 +117,14 @@ Sorted by Newly Added
     \   ${db_text}=     Get From List       ${db_element}     0    
     \   Should Be Equal     ${text}     ${db_text}
     \   ${index}=       Evaluate    ${index}+1
+
+Click Search
+    Input Text    id:company-search-bar    ${search_value}
+    Press Key    id:company-search-bar    ${ENTER_KEY}
+    ${elements from db}=    Query     SELECT COUNT(*) FROM ( SELECT * FROM public.companies WHERE name ILIKE '%${search_value}%' AND discarded_at IS NULL LIMIT ${vendors_seeded_paginated} ) AS a
+    Sleep   5
+    ${db count as int}=     Db Count To Int     ${elements from db}
+    ${matched elements}=    Get Element Count     xpath=//div[contains(@class, 'vendor-name')]
+    Should Be Equal         ${matched elements}     ${db count as int}
+    
+

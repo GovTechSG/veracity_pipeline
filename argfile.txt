@@ -1,5 +1,5 @@
 # variables to set correctly before any test (e.g. SERVER:bgp.ida-gds-demo.com / bgp-ci.ida-gds-demo.com / localhost:5000)
---variable SERVER:localhost:5000
+--variable SERVER:localhost:5000/portal
 --variable BROWSER:chrome
 --variable ENVIRONMENT:DEV
 --variable LOCAL_RUN:Yes
