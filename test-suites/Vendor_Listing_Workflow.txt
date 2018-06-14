@@ -23,10 +23,17 @@ ${DBPort}         5432
 ${DBUser}         ""
 ${search_value}   o
 ${search_query}   '%o%'
-${filter_value}   Agriculture
+${industry_filter_value}   Agriculture
+${grant_filter_value}   Building Information Model Fund
 ${ENTER_KEY}      \\13 
-${industry_query}  SELECT id FROM public.industries WHERE name = '${filter_value}' AND discarded_at IS NULL
+${industry_query}  SELECT id FROM public.industries WHERE name = '${industry_filter_value}' AND discarded_at IS NULL
 ${industry_companies_query}     SELECT company_id FROM public.industry_companies WHERE industry_id IN ( ${industry_query} )
+${grant_products_query}     SELECT company_id FROM public.products WHERE id IN ( SELECT reviewable_id FROM public.reviews WHERE grant_id IN ( SELECT id FROM public.grants WHERE reviewable_type = 'Product' AND name = '${grant_filter_value}' AND discarded_at IS NULL) AND discarded_at IS NULL)
+${grant_services_query}     SELECT company_id FROM public.services WHERE id IN ( SELECT reviewable_id FROM public.reviews WHERE grant_id IN ( SELECT id FROM public.grants WHERE reviewable_type = 'Service' AND name = '${grant_filter_value}' AND discarded_at IS NULL) AND discarded_at IS NULL)
+${grant_projects_query}     SELECT company_id FROM public.projects WHERE id IN ( SELECT reviewable_id FROM public.reviews WHERE grant_id IN ( SELECT id FROM public.grants WHERE reviewable_type = 'Project' AND name = '${grant_filter_value}' AND discarded_at IS NULL) AND discarded_at IS NULL)
+${grant_company_id_query}   SELECT DISTINCT company_id FROM ( ${grant_products_query} UNION ${grant_services_query} UNION ${grant_projects_query} ) AS company_id
+${grant_companies_query}    SELECT * FROM public.companies WHERE id IN (${grant_company_id_query}) AND discarded_at IS NULL LIMIT ${vendors_seeded_paginated}
+${grant_query}              SELECT COUNT(*) FROM (${grant_companies_query}) AS a
 
 *** Test Cases ***
 [View by Best Ratings] List Vendors by Best Ratings
@@ -57,7 +64,11 @@ ${industry_companies_query}     SELECT company_id FROM public.industry_companies
 
 [Filter by Industries] Filter Vendors by Industries
 
-    Click Filter
+    Click Industry Filter
+
+[Filter by Grants] Filter Vendors by Grants
+
+    Click Grants Filter
 
 *** Keywords ***
 Suite Setup
@@ -129,9 +140,18 @@ Click Search
     ${matched elements}=    Get Element Count     xpath=//div[contains(@class, 'vendor-name')]
     Should Be Equal         ${matched elements}     ${db count as int}
     
-Click Filter
-    Select Checkbox     xpath=//li[contains(@class, 'industry-category')]/div/label[contains(@title, '${filter_value}')]/input
+Click Industry Filter
+    Wait Until Page Contains Element    //li[contains(@class, 'industry-category')]
+    Select Checkbox     xpath=//li[contains(@class, 'industry-category')]/div/label[contains(@title, '${industry_filter_value}')]/input
     ${elements from db}=    Query     SELECT COUNT(*) FROM ( SELECT * FROM public.companies WHERE id IN ( ${industry_companies_query} ) AND discarded_at IS NULL LIMIT ${vendors_seeded_paginated} ) AS a
+    Sleep   5
+    ${db count as int}=     Db Count To Int     ${elements from db}
+    ${matched elements}=    Get Element Count     xpath=//div[contains(@class, 'vendor-name')]
+    Should Be Equal         ${matched elements}     ${db count as int}
+Click Grants Filter
+    Wait Until Page Contains Element    //li[contains(@class, 'grant-category')]
+    Select Checkbox     xpath=//li[contains(@class, 'grant-category')]/div/label[contains(@title, '${grant_filter_value}')]/input
+    ${elements from db}=    Query     ${grant_query}
     Sleep   5
     ${db count as int}=     Db Count To Int     ${elements from db}
     ${matched elements}=    Get Element Count     xpath=//div[contains(@class, 'vendor-name')]
