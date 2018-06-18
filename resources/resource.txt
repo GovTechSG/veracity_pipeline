@@ -4,7 +4,7 @@ Documentation     A resource file with reusable keywords and variables.
 ...               The system specific keywords created here form our own
 ...               domain specific language. They utilize keywords provided
 ...               by the imported Selenium2Library.
-Library           SeleniumLibrary
+Library           Selenium2Library
 Library           FakerLibrary
 Library           DatabaseLibrary
 Library           DateTime
@@ -19,21 +19,9 @@ Resource          ../resources/RF_Helpers.txt
 ####################
 # Server Variables #
 ####################
-${SERVER}         Actual value set dynamically at test execution
-${BROWSER}        Firefox
-#${WINDOWS}        ${EMPTY}
-${ENVIRONMENT}    DEV    # Default to DEV env. Other value could be CI or QA.
-${DB_SERVER}      localhost
-${DB_PORT}        5432
-${DB_USER}        
-${DB_NAME}        product-review-platform_development
-${DB_PWD}         
 ${DB_CONN_STR}    '${DB_SERVER}:${DB_PORT}/${DB_NAME}'
 ${DELAY}          0
 ${HOME PAGE}      http://${SERVER}
-#${HOME PAGE}      https://${SERVER}
-#${FULL_PATH_DEV_DB}    /Users/gds/git/bgp_frontend/db/development.sqlite3    # Full path to the development DB
-#${FULL_PATH_DEV_DB}    bgp_react_dev    # New PostgreSQL database for local machine
 ${FAILED_ERR_MSG}    Failed
 
 #########################
@@ -114,8 +102,6 @@ Open The Browser
     Run Keyword If    '${LOCAL_RUN}'=='Yes' and '${BROWSER}'=='chrome'    Go To    ${URL}
     ...    ELSE        Open Browser    ${URL}    ${BROWSER}
     Run Keyword Unless    '${BROWSER}'=='chrome'    Maximize Browser Window
-    Run Keyword Unless    '${LOCAL_RUN}'=='Yes'    Open Browser    ${URL}    ${BROWSER}    None    ${GRID_URL}
-    ...    browserName:${BROWSER},platform:${PLATFORM}
 
 Logout From BGP Without Alert
     Click    logout-button

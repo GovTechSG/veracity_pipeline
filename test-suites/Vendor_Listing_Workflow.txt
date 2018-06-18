@@ -16,11 +16,6 @@ Library           Collections
 ${vendor_list}    ${EMPTY}
 ${vendors_seeded_paginated}     ${5}
 ${max_ratings}      ${100}
-${DBHost}         'localhost'
-${DBName}         'product-review-platform_development'
-${DBPass}         ""
-${DBPort}         5432
-${DBUser}         ""
 ${search_value}   o
 ${search_query}   '%o%'
 ${industry_filter_value}   Agriculture
@@ -73,7 +68,7 @@ ${grant_query}              SELECT COUNT(*) FROM (${grant_companies_query}) AS a
 *** Keywords ***
 Suite Setup
     Initialise ROR Test Suite
-    Connect To Database Using Custom Params     psycopg2    database=${DBName}, user=${DBUser}, password=${DBPass}, host=${DBHost}, port=${DBPort}
+    Connect To Database Using Custom Params     psycopg2    database=${DB_NAME}, user=${DB_USER}, password=${DB_PWD}, host=${DB_SERVER}, port=${DB_PORT}
 
 Suite Teardown
     Disconnect From Database
