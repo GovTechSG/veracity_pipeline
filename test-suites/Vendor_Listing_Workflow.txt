@@ -1,0 +1,158 @@
+*** Settings ***
+Documentation     *Objectives:*
+...               To Validate the Vendor Listing End To End Work Flow
+...               1. Backend to Frontend for Vendor Listing Index
+
+Suite Setup       Suite Setup
+Suite Teardown    Suite Teardown
+Test Setup        Go To    ${HOME PAGE}
+Force Tags        vendor_listing_workflows    end-to-end    1
+Resource          ../resources/resource.txt
+Library           DatabaseLibrary
+Library           OperatingSystem
+Library           Collections
+
+*** Variables ***
+${vendor_list}    ${EMPTY}
+${vendors_seeded_paginated}     ${5}
+${max_ratings}      ${100}
+${DBHost}         'localhost'
+${DBName}         'product-review-platform_development'
+${DBPass}         ""
+${DBPort}         5432
+${DBUser}         ""
+${search_value}   o
+${search_query}   '%o%'
+${industry_filter_value}   Agriculture
+${grant_filter_value}   Building Information Model Fund
+${ENTER_KEY}      \\13 
+${industry_query}  SELECT id FROM public.industries WHERE name = '${industry_filter_value}' AND discarded_at IS NULL
+${industry_companies_query}     SELECT company_id FROM public.industry_companies WHERE industry_id IN ( ${industry_query} )
+${grant_products_query}     SELECT company_id FROM public.products WHERE id IN ( SELECT reviewable_id FROM public.reviews WHERE grant_id IN ( SELECT id FROM public.grants WHERE reviewable_type = 'Product' AND name = '${grant_filter_value}' AND discarded_at IS NULL) AND discarded_at IS NULL)
+${grant_services_query}     SELECT company_id FROM public.services WHERE id IN ( SELECT reviewable_id FROM public.reviews WHERE grant_id IN ( SELECT id FROM public.grants WHERE reviewable_type = 'Service' AND name = '${grant_filter_value}' AND discarded_at IS NULL) AND discarded_at IS NULL)
+${grant_projects_query}     SELECT company_id FROM public.projects WHERE id IN ( SELECT reviewable_id FROM public.reviews WHERE grant_id IN ( SELECT id FROM public.grants WHERE reviewable_type = 'Project' AND name = '${grant_filter_value}' AND discarded_at IS NULL) AND discarded_at IS NULL)
+${grant_company_id_query}   SELECT DISTINCT company_id FROM ( ${grant_products_query} UNION ${grant_services_query} UNION ${grant_projects_query} ) AS company_id
+${grant_companies_query}    SELECT * FROM public.companies WHERE id IN (${grant_company_id_query}) AND discarded_at IS NULL LIMIT ${vendors_seeded_paginated}
+${grant_query}              SELECT COUNT(*) FROM (${grant_companies_query}) AS a
+
+*** Test Cases ***
+[View by Best Ratings] List Vendors by Best Ratings
+	[Documentation]  *Objective:*    
+    ...            1. Retrieve Vendors from Backend
+    ...            2. Verify Vendors are sorted by ratings
+
+    ##Retrieve Vendors from Backend
+    Load Vendor Listing Page
+    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
+    ${count}=   Get Matching Xpath Count   xpath=//div[contains(@class, 'vendor-item')]
+    Should Be Equal As Integers     ${count}    ${vendors_seeded_paginated}
+
+    ##Verify Vendors are sorted by ratings
+    Sorted by Ratings
+
+[View by Newly Added] List Vendors by Newly Added
+
+    ##Click Newly Added
+    Click Newly Added
+
+    ##Verify Vendors are sorted by created_at
+    Sorted by Newly Added
+
+[Search by Name] Search Vendors by Name
+
+    Click Search
+
+[Filter by Industries] Filter Vendors by Industries
+
+    Click Industry Filter
+
+[Filter by Grants] Filter Vendors by Grants
+
+    Click Grants Filter
+
+*** Keywords ***
+Suite Setup
+    Initialise ROR Test Suite
+    Connect To Database Using Custom Params     psycopg2    database=${DBName}, user=${DBUser}, password=${DBPass}, host=${DBHost}, port=${DBPort}
+
+Suite Teardown
+    Disconnect From Database
+    Teardown Test Suite Without Alert
+
+Load Vendor Listing Page
+    Title Should Be    Government Review Platform
+
+Sorted by Ratings
+    ${current_value}=   Set Variable   ${max_ratings}
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'aggregate_score')]
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=    Get Text    ${element}      # will get the text of each matched node
+    \   ${result}=      Numeric less than or equal to   ${text}     ${current_value}
+    \   Should Be True     ${result}
+    \   ${current_value}=   Set Variable    ${text}
+
+    Click Next Page
+    Sleep   5
+
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'aggregate_score')]
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=    Get Text    ${element}      # will get the text of each matched node
+    \   ${result}=      Numeric less than or equal to   ${text}     ${current_value}
+    \   Should Be True     ${result}
+    \   ${current_value}=   Set Variable    ${text}
+
+Click Newly Added
+    Sleep   2
+    Click Element   id:newly_added
+    Sleep   5
+
+Click Next Page
+    Wait Until Page Contains Element    xpath://a[contains(text(),'NEXT')]
+    Click Element   xpath://a[contains(text(),'NEXT')]
+
+Sorted by Newly Added
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'vendor-name')]
+    ${elements from db}=    Query     SELECT name FROM public.companies WHERE discarded_at IS NULL ORDER BY created_at DESC
+    ${index}=    Set Variable    0
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=        Get Text    ${element}
+    \   ${db_element}=     Get From List       ${elements from db}     ${index}
+    \   ${db_text}=     Get From List       ${db_element}     0    
+    \   Should Be Equal     ${text}     ${db_text}
+    \   ${index}=       Evaluate    ${index}+1
+
+    Click Next Page
+    Sleep    5
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'vendor-name')]
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=        Get Text    ${element}
+    \   ${db_element}=     Get From List       ${elements from db}     ${index}
+    \   ${db_text}=     Get From List       ${db_element}     0    
+    \   Should Be Equal     ${text}     ${db_text}
+    \   ${index}=       Evaluate    ${index}+1
+
+Click Search
+    Input Text    id:company-search-bar    ${search_value}
+    Press Key    id:company-search-bar    ${ENTER_KEY}
+    ${elements from db}=    Query     SELECT COUNT(*) FROM ( SELECT * FROM public.companies WHERE name ILIKE '%${search_value}%' AND discarded_at IS NULL LIMIT ${vendors_seeded_paginated} ) AS a
+    Sleep   5
+    ${db count as int}=     Db Count To Int     ${elements from db}
+    ${matched elements}=    Get Element Count     xpath=//div[contains(@class, 'vendor-name')]
+    Should Be Equal         ${matched elements}     ${db count as int}
+    
+Click Industry Filter
+    Wait Until Page Contains Element    //li[contains(@class, 'industry-category')]
+    Select Checkbox     xpath=//li[contains(@class, 'industry-category')]/div/label[contains(@title, '${industry_filter_value}')]/input
+    ${elements from db}=    Query     SELECT COUNT(*) FROM ( SELECT * FROM public.companies WHERE id IN ( ${industry_companies_query} ) AND discarded_at IS NULL LIMIT ${vendors_seeded_paginated} ) AS a
+    Sleep   5
+    ${db count as int}=     Db Count To Int     ${elements from db}
+    ${matched elements}=    Get Element Count     xpath=//div[contains(@class, 'vendor-name')]
+    Should Be Equal         ${matched elements}     ${db count as int}
+Click Grants Filter
+    Wait Until Page Contains Element    //li[contains(@class, 'grant-category')]
+    Select Checkbox     xpath=//li[contains(@class, 'grant-category')]/div/label[contains(@title, '${grant_filter_value}')]/input
+    ${elements from db}=    Query     ${grant_query}
+    Sleep   5
+    ${db count as int}=     Db Count To Int     ${elements from db}
+    ${matched elements}=    Get Element Count     xpath=//div[contains(@class, 'vendor-name')]
+    Should Be Equal         ${matched elements}     ${db count as int}
