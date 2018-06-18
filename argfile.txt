@@ -8,6 +8,7 @@
 --variable DB_NAME:'product-review-platform_development'
 --variable DB_USER:''
 --variable DB_PWD:''
+--variable DB_PORT:5432
 
 # output dir to store the test logs (e.g. /root/robot/demo/results)
 --outputdir ./robot/results
