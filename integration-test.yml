@@ -1,0 +1,7 @@
+version: '2.1'
+services:
+  qa:
+    extends:
+      file: ./tests-integration-service.yml
+      service: test-integration
+    command: ['pybot', '-d', './results/ror_test_01','-x', 'xunit_output.xml','-A', 'argfile.txt']

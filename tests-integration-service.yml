@@ -1,0 +1,7 @@
+version: '2.1'
+services:
+  test-integration:
+    build: .
+    volumes:
+      - ${CURR_DIR:-./}:/robot
+    shm_size: 1g
