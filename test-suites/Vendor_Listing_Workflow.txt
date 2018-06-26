@@ -47,6 +47,8 @@ ${grant_query}              SELECT COUNT(*) FROM (${grant_companies_query}) AS a
 
 [View by Newly Added] List Vendors by Newly Added
 
+    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
+
     ##Click Newly Added
     Click Newly Added
 
@@ -55,14 +57,17 @@ ${grant_query}              SELECT COUNT(*) FROM (${grant_companies_query}) AS a
 
 [Search by Name] Search Vendors by Name
 
+    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
     Click Search
 
 [Filter by Industries] Filter Vendors by Industries
 
+    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
     Click Industry Filter
 
 [Filter by Grants] Filter Vendors by Grants
 
+    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
     Click Grants Filter
 
 *** Keywords ***
@@ -87,7 +92,7 @@ Sorted by Ratings
     \   ${current_value}=   Set Variable    ${text}
 
     Click Next Page
-    Sleep   5
+    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
 
     ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'aggregate_score')]
     :FOR  ${element}  IN  @{matched elements}
@@ -97,9 +102,8 @@ Sorted by Ratings
     \   ${current_value}=   Set Variable    ${text}
 
 Click Newly Added
-    Sleep   2
     Click Element   id:newly_added
-    Sleep   5
+    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
 
 Click Next Page
     Wait Until Page Contains Element    xpath://a[contains(text(),'NEXT')]
@@ -117,7 +121,8 @@ Sorted by Newly Added
     \   ${index}=       Evaluate    ${index}+1
 
     Click Next Page
-    Sleep    5
+    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
+
     ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'vendor-name')]
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=        Get Text    ${element}
@@ -130,7 +135,7 @@ Click Search
     Input Text    id:company-search-bar    ${search_value}
     Press Key    id:company-search-bar    ${ENTER_KEY}
     ${elements from db}=    Query     SELECT COUNT(*) FROM ( SELECT * FROM public.companies WHERE name ILIKE '%${search_value}%' AND discarded_at IS NULL LIMIT ${vendors_seeded_paginated} ) AS a
-    Sleep   5
+    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
     ${db count as int}=     Db Count To Int     ${elements from db}
     ${matched elements}=    Get Element Count     xpath=//div[contains(@class, 'vendor-name')]
     Should Be Equal         ${matched elements}     ${db count as int}
@@ -139,15 +144,16 @@ Click Industry Filter
     Wait Until Page Contains Element    //li[contains(@class, 'industry-category')]
     Select Checkbox     xpath=//li[contains(@class, 'industry-category')]/div/label[contains(@title, '${industry_filter_value}')]/input
     ${elements from db}=    Query     SELECT COUNT(*) FROM ( SELECT * FROM public.companies WHERE id IN ( ${industry_companies_query} ) AND discarded_at IS NULL LIMIT ${vendors_seeded_paginated} ) AS a
-    Sleep   5
+    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
     ${db count as int}=     Db Count To Int     ${elements from db}
     ${matched elements}=    Get Element Count     xpath=//div[contains(@class, 'vendor-name')]
     Should Be Equal         ${matched elements}     ${db count as int}
+
 Click Grants Filter
     Wait Until Page Contains Element    //li[contains(@class, 'grant-category')]
     Select Checkbox     xpath=//li[contains(@class, 'grant-category')]/div/label[contains(@title, '${grant_filter_value}')]/input
     ${elements from db}=    Query     ${grant_query}
-    Sleep   5
+    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
     ${db count as int}=     Db Count To Int     ${elements from db}
     ${matched elements}=    Get Element Count     xpath=//div[contains(@class, 'vendor-name')]
     Should Be Equal         ${matched elements}     ${db count as int}
