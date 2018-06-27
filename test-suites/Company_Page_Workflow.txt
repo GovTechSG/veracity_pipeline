@@ -23,6 +23,10 @@ Library           Collections
     Click first company
     Check company information
 
+[Company Page] Display Company Offerings
+    Click first company
+    Check company offerings
+
 *** Keywords ***
 Suite Setup
     Initialise ROR Test Suite
@@ -51,9 +55,14 @@ Check company information
     Should Not Be Empty     ${text}
     ${text}=    Get Text     xpath=//span[contains(@class, 'vendor-phone')]
     Should Not Be Empty     ${text}
-    ${text}=    Get Text     xpath=//span[contains(@class, 'vendor-phone')]
-    Should Not Be Empty     ${text}
     ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'client-images')]//span
     Length Should Be    ${matched elements}     3
     ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'grants-experience')]//li
+    Length Should Be    ${matched elements}     3
+
+Check company offerings
+    Wait Until Page Contains Element    //div[contains(@class,'offerings')]
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'offering-name')]
+    Length Should Be    ${matched elements}     3
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'offering-desc')]
     Length Should Be    ${matched elements}     3
