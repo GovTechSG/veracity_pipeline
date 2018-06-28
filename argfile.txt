@@ -1,5 +1,5 @@
 # variables to set correctly before any test (e.g. SERVER:bgp.ida-gds-demo.com / bgp-ci.ida-gds-demo.com / localhost:5000)
---variable SERVER:localhost:5000/portal
+--variable SERVER:localhost:5000/demo
 --variable BROWSER:chrome
 --variable ENVIRONMENT:DEV
 --variable LOCAL_RUN:Yes
@@ -22,3 +22,4 @@
 --name GRP
 
   test-suites/Vendor_Listing_Workflow.txt
+  test-suites/Company_Page_Workflow.txt
