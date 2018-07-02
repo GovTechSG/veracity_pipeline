@@ -13,6 +13,12 @@ Library           OperatingSystem
 Library           Collections
 
 *** Variables ***
+${review_pagination}    5
+${positive_rating}  Positive Experience
+${neutral_rating}  Neutral Experience
+${negative_rating}  Negative Experience
+${positive_header}  Areas done well:
+${negative_header}  Areas to be improved:
 
 *** Test Cases ***
 [Company Page] Display Company Information
@@ -26,6 +32,10 @@ Library           Collections
 [Company Page] Display Company Offerings
     Click first company
     Check company offerings
+
+[Company Page] Display Company Scores and Reviews
+    Click first company
+    Check company scores and reviews
 
 *** Keywords ***
 Suite Setup
@@ -66,3 +76,88 @@ Check company offerings
     Length Should Be    ${matched elements}     3
     ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'offering-desc')]
     Length Should Be    ${matched elements}     3
+
+Check company scores and reviews
+    Wait Until Page Contains Element    //div[contains(@class,'reviews-header')]
+    ${text}=    Get Text     xpath=//div[contains(@class, 'review-count')]
+    Should Not Be Empty     ${text}
+    Element Should Be Visible   id:positive-row
+    Element Should Be Visible   id:neutral-row
+    Element Should Be Visible   id:negative-row
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'review-bar')]
+    Length Should Be    ${matched elements}     3
+
+    # Check that aspects are sorted by count
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'aspect-count')]
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=    Get Text    ${element}      # will get the text of each matched node
+    \   ${result}=      Numeric less than or equal to   ${text}     ${current_value}
+    \   Should Be True     ${result}
+    \   ${current_value}=   Set Variable    ${text}
+
+    # Check that review data shows
+    ${text}=    Get Text     xpath=//span[contains(@class, 'reviewer-name')]
+    Should Not Be Empty     ${text}
+    ${text}=    Get Text     xpath=//span[contains(@class, 'review-date')]
+    Should Not Be Empty     ${text}
+    ${text}=    Get Text     id:review-rating
+    Should Not Be Empty     ${text}
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'review-aspects')]//span
+    ${length}=  Get Length  ${matched elements}
+    ${result}=      Numeric less than or equal to   1     ${length}
+    Should Be True     ${result}
+    ${text}=    Get Text     id:offerings
+    Should Not Be Empty     ${text}
+    ${text}=    Get Text     xpath=//div[contains(@class, 'review-content')]//span
+    Should Not Be Empty     ${text}
+
+
+    # Check that there are 5 reviews 
+    ${matched elements}=    Get Webelements     class:review
+    Length Should Be    ${matched elements}     ${review_pagination}
+
+    # Check that load more works
+    Click Element   xpath=//button[contains(@class, 'load-more-button')]
+    Sleep   2
+    ${matched elements}=    Get Webelements     class:review
+    ${two page}=    Evaluate    ${review_pagination} + ${review_pagination}
+    Length Should Be    ${matched elements}     ${two_page}
+
+    #Check that filters work
+    Click Element   id:positive-filter
+    Sleep   2
+    ${matched elements}=    Get Webelements     id:review-rating
+    Length Should Be    ${matched elements}     ${review_pagination}
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=    Get Text    ${element}      # will get the text of each matched node
+    \   Should Be Equal     ${text}     ${positive_rating}
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'aspect-heading')]//span
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=    Get Text    ${element}      # will get the text of each matched node
+    \   Should Be Equal     ${text}     ${positive_header}
+
+    Click Element   id:neutral-filter
+    Sleep   2
+    ${matched elements}=    Get Webelements     id:review-rating
+    Length Should Be    ${matched elements}     ${review_pagination}
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=    Get Text    ${element}      # will get the text of each matched node
+    \   Should Be Equal     ${text}     ${neutral_rating}
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'aspect-heading')]//span
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=    Get Text    ${element}      # will get the text of each matched node
+    \   Should Be Equal     ${text}     ${negative_header}
+    
+
+    Click Element   id:negative-filter
+    Sleep   2
+    ${matched elements}=    Get Webelements     id:review-rating
+    Length Should Be    ${matched elements}     ${review_pagination}
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=    Get Text    ${element}      # will get the text of each matched node
+    \   Should Be Equal     ${text}     ${negative_rating}
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'aspect-heading')]//span
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=    Get Text    ${element}      # will get the text of each matched node
+    \   Should Be Equal     ${text}     ${negative_header}
+
