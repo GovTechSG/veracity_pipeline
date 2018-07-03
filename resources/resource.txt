@@ -58,7 +58,7 @@ Initialise Basic Test Suite
 
 Initialise ROR Test Suite
     Initialise Basic Test Suite
-    Open Browser to the Right Home Page
+    Open Browser to Home Page
 
 Teardown Test Suite
     [Arguments]    ${CloseBrowser}=${EMPTY}
@@ -83,14 +83,14 @@ Teardown Test Suite End To End
     Run Keyword If    '${CloseBrowser}'=='${EMPTY}'    Close All Browsers
 
 Open Browser To Login Page
-    Run Keyword If    '${LOCAL_RUN}'=='Yes'     Open The Browser    http://${SERVER}    ${BROWSER}
-    ...     ELSE    Open The Browser    https://${SERVER}    ${BROWSER}
+    Open The Browser    ${HOME PAGE}    ${BROWSER}
     Maximize Browser Window
     Set Selenium Speed    ${DELAY}
     Login Page Should Be Open
 
 Open Browser to Home Page
-    Open The Browser    ${HOME PAGE}    ${BROWSER}
+    Run Keyword If    '${LOCAL_RUN}'=='Yes'     Open The Browser    http://${SERVER}    ${BROWSER}
+    ...     ELSE    Open The Browser    https://${SERVER}    ${BROWSER}
     #Maximize Browser Window
 
     Set Selenium Speed    ${DELAY}
