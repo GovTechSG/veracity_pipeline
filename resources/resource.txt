@@ -91,7 +91,7 @@ Open Browser To Login Page
 Open Browser to Home Page
     Run Keyword If    '${LOCAL_RUN}'=='Yes'     Open The Browser    http://${SERVER}    ${BROWSER}
     ...     ELSE    Open The Browser    https://${SERVER}    ${BROWSER}
-    #Maximize Browser Window
+    Maximize Browser Window
 
     Set Selenium Speed    ${DELAY}
     #Title Should Be    Enter your username and password
