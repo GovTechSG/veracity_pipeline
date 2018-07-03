@@ -103,6 +103,10 @@ Open The Browser
     ...    ELSE        Open Browser    ${URL}    ${BROWSER}
     Run Keyword Unless    '${BROWSER}'=='chrome'    Maximize Browser Window
 
+Go To The Right Home Page
+    Run Keyword If    '${LOCAL_RUN}'=='Yes' and '${BROWSER}'=='chrome'    Go To    http://${SERVER}
+    ...     ELSE    Go To    https://${SERVER}
+
 Logout From BGP Without Alert
     Click    logout-button
     Sleep    1s

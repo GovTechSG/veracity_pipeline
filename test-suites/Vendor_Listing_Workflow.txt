@@ -5,7 +5,7 @@ Documentation     *Objectives:*
 
 Suite Setup       Suite Setup
 Suite Teardown    Suite Teardown
-Test Setup        Go To    ${HOME PAGE}
+Test Setup        Go To The Right Home Page
 Force Tags        vendor_listing_workflows    end-to-end    1
 Resource          ../resources/resource.txt
 Library           DatabaseLibrary
