@@ -501,7 +501,7 @@ def set_chrome_options():
     chromeOptions.add_experimental_option("prefs", prefs)
     #Start Fullscreen because as of 9 June 2017 start-maximized switch is bugged
     chromeOptions.add_argument("start-fullscreen")
-    chromeOptions.add_argument("window-size=1920,1080")
+    chromeOptions.add_argument("window-size=1280,1080")
     #Disable all extensions before running
     chromeOptions.add_argument("disable-extensions")
     #Ignore certificate errors (Appian side self-signed)
