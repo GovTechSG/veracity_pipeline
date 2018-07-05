@@ -94,8 +94,8 @@ Click Newly Added
     Run Keyword And Continue On Failure  Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
 
 Click Next Page
-    Run Keyword And Continue On Failure  Wait Until Page Contains Element    xpath://a[contains(text(),'NEXT')]
-    Click Element   xpath://a[@class="prev-next next"]
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    xpath=//a[@class="prev-next next"]
+    Click Element   xpath=//a[@class="prev-next next"]
 
 Sorted by Newly Added
     ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'vendor-name')]
