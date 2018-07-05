@@ -27,12 +27,21 @@ ${company_hashid}   eowtne
     ...            1. Click first vendor
     ...            2. Check that information is displayed
 
+
+    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     Check company information
 
 [Company Page] Display Company Offerings
+
+    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     Check company offerings
 
 [Company Page] Display Company Scores and Reviews
+
+    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     Check company scores and reviews
 
 *** Keywords ***
@@ -46,8 +55,6 @@ Suite Teardown
     Teardown Test Suite Without Alert
 
 Check company information
-    Wait Until Page Contains Element    xpath=//*[name() = 'svg' and @class='nc-icon glyph']
-    Wait Until Page Does Not Contain Element    xpath=//*[name() = 'svg' and @class='nc-icon glyph']
     ${text}=    Get Text     xpath=//span[contains(@class, 'vendor-name')]
     Should Not Be Empty     ${text}
     ${text}=    Get Text     xpath=//span[contains(@class, 'vendor-uen')]
@@ -66,16 +73,12 @@ Check company information
     Length Should Be    ${matched elements}     3
 
 Check company offerings
-    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
-    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'offering-name')]
     Length Should Be    ${matched elements}     3
     ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'offering-desc')]
     Length Should Be    ${matched elements}     3
 
 Check company scores and reviews
-    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
-    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     ${text}=    Get Text     xpath=//div[contains(@class, 'review-count')]
     Should Not Be Empty     ${text}
     Element Should Be Visible   id:positive-row
@@ -105,7 +108,7 @@ Check company scores and reviews
     Should Be True     ${result}
     ${text}=    Get Text     id:offerings
     Should Not Be Empty     ${text}
-    ${text}=    Get Text     xpath=//div[contains(@class, 'review-content')]//div
+    ${text}=    Get Text     xpath=//div[contains(@class, 'review-content')]//span
     Should Not Be Empty     ${text}
 
 

@@ -42,12 +42,10 @@ ${grant_query}              SELECT COUNT(*) FROM (${grant_companies_query}) AS a
     ${count}=   Get Matching Xpath Count   xpath=//div[contains(@class, 'vendor-item')]
     Should Be Equal As Integers     ${count}    ${vendors_seeded_paginated}
 
-    ##Verify Vendors are sorted by ratings
-    Sorted by Ratings
-
 [View by Newly Added] List Vendors by Newly Added
 
-    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
+    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
 
     ##Click Newly Added
     Click Newly Added
@@ -57,20 +55,25 @@ ${grant_query}              SELECT COUNT(*) FROM (${grant_companies_query}) AS a
 
 [Search by Name] Search Vendors by Name
 
-    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
+    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     Click Search
 
 [Filter by Industries] Filter Vendors by Industries
 
-    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
+    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     Click Industry Filter
 
 [Filter by Grants] Filter Vendors by Grants
 
-    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
+    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     Click Grants Filter
 
 [Company Page] Company Names are Clickable
+    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     Click first company
     Wait Until Page Contains Element    //span[contains(@class, 'companypage-back')]
 
@@ -85,25 +88,6 @@ Suite Teardown
 
 Load Vendor Listing Page
     Title Should Be    Government Review Platform
-
-Sorted by Ratings
-    ${current_value}=   Set Variable   ${max_ratings}
-    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'aggregate_score')]
-    :FOR  ${element}  IN  @{matched elements}
-    \   ${text}=    Get Text    ${element}      # will get the text of each matched node
-    \   ${result}=      Numeric less than or equal to   ${text}     ${current_value}
-    \   Should Be True     ${result}
-    \   ${current_value}=   Set Variable    ${text}
-
-    Click Next Page
-    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
-
-    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'aggregate_score')]
-    :FOR  ${element}  IN  @{matched elements}
-    \   ${text}=    Get Text    ${element}      # will get the text of each matched node
-    \   ${result}=      Numeric less than or equal to   ${text}     ${current_value}
-    \   Should Be True     ${result}
-    \   ${current_value}=   Set Variable    ${text}
 
 Click Newly Added
     Click Element   id:newly_added
