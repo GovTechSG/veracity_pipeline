@@ -500,7 +500,7 @@ def set_chrome_options():
              'profile': {'password_manager_enabled': False}}
     chromeOptions.add_experimental_option("prefs", prefs)
     #Start Fullscreen because as of 9 June 2017 start-maximized switch is bugged
-    chromeOptions.add_argument("start-fullscreen")
+    # chromeOptions.add_argument("start-fullscreen")
     chromeOptions.add_argument("headless")
     chromeOptions.add_argument("window-size=1280,1080")
     #Disable all extensions before running

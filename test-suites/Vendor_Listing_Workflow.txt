@@ -70,6 +70,10 @@ ${grant_query}              SELECT COUNT(*) FROM (${grant_companies_query}) AS a
     Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
     Click Grants Filter
 
+[Company Page] Company Names are Clickable
+    Click first company
+    Wait Until Page Contains Element    //span[contains(@class, 'companypage-back')]
+
 *** Keywords ***
 Suite Setup
     Initialise ROR Test Suite
@@ -157,3 +161,9 @@ Click Grants Filter
     ${db count as int}=     Db Count To Int     ${elements from db}
     ${matched elements}=    Get Element Count     xpath=//div[contains(@class, 'vendor-name')]
     Should Be Equal         ${matched elements}     ${db count as int}
+
+Click first company
+    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
+    Click Element   xpath=//div[contains(@class, 'vendor-name')]
+    Sleep   1
+    Wait Until Page Contains Element    //div[contains(@class,'vendor-card')]

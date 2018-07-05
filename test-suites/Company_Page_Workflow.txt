@@ -5,7 +5,7 @@ Documentation     *Objectives:*
 
 Suite Setup       Suite Setup
 Suite Teardown    Suite Teardown
-Test Setup        Go To The Right Home Page
+Test Setup        Go To The Right URL       company/${company_hashid}
 Force Tags        vendor_listing_workflows    end-to-end    1
 Resource          ../resources/resource.txt
 Library           DatabaseLibrary
@@ -19,6 +19,7 @@ ${neutral_rating}  Neutral Experience
 ${negative_rating}  Negative Experience
 ${positive_header}  Areas done well:
 ${negative_header}  Areas to be improved:
+${company_hashid}   eowtne
 
 *** Test Cases ***
 [Company Page] Display Company Information
@@ -26,33 +27,27 @@ ${negative_header}  Areas to be improved:
     ...            1. Click first vendor
     ...            2. Check that information is displayed
 
-    Click first company
     Check company information
 
 [Company Page] Display Company Offerings
-    Click first company
     Check company offerings
 
 [Company Page] Display Company Scores and Reviews
-    Click first company
     Check company scores and reviews
 
 *** Keywords ***
 Suite Setup
     Initialise ROR Test Suite
     Connect To Database Using Custom Params     psycopg2    database=${DB_NAME}, user=${DB_USER}, password=${DB_PWD}, host=${DB_SERVER}, port=${DB_PORT}
+    Go To The Right URL       company/${company_hashid}
 
 Suite Teardown
     Disconnect From Database
     Teardown Test Suite Without Alert
 
-Click first company
-    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
-    Click Element   xpath=//div[contains(@class, 'vendor-name')]
-    Sleep   1
-    Wait Until Page Contains Element    //div[contains(@class,'vendor-card')]
-
 Check company information
+    Wait Until Page Contains Element    xpath=//*[name() = 'svg' and @class='nc-icon glyph']
+    Wait Until Page Does Not Contain Element    xpath=//*[name() = 'svg' and @class='nc-icon glyph']
     ${text}=    Get Text     xpath=//span[contains(@class, 'vendor-name')]
     Should Not Be Empty     ${text}
     ${text}=    Get Text     xpath=//span[contains(@class, 'vendor-uen')]
@@ -71,14 +66,16 @@ Check company information
     Length Should Be    ${matched elements}     3
 
 Check company offerings
-    Wait Until Page Contains Element    //div[contains(@class,'offerings')]
+    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'offering-name')]
     Length Should Be    ${matched elements}     3
     ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'offering-desc')]
     Length Should Be    ${matched elements}     3
 
 Check company scores and reviews
-    Wait Until Page Contains Element    //div[contains(@class,'reviews-header')]
+    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     ${text}=    Get Text     xpath=//div[contains(@class, 'review-count')]
     Should Not Be Empty     ${text}
     Element Should Be Visible   id:positive-row
@@ -102,13 +99,13 @@ Check company scores and reviews
     Should Not Be Empty     ${text}
     ${text}=    Get Text     id:review-rating
     Should Not Be Empty     ${text}
-    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'review-aspects')]//span
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'review-aspects')]//div
     ${length}=  Get Length  ${matched elements}
     ${result}=      Numeric less than or equal to   1     ${length}
     Should Be True     ${result}
     ${text}=    Get Text     id:offerings
     Should Not Be Empty     ${text}
-    ${text}=    Get Text     xpath=//div[contains(@class, 'review-content')]//span
+    ${text}=    Get Text     xpath=//div[contains(@class, 'review-content')]//div
     Should Not Be Empty     ${text}
 
 

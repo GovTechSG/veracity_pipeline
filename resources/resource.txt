@@ -108,6 +108,11 @@ Go To The Right Home Page
     Run Keyword If    '${LOCAL_RUN}'=='Yes' and '${BROWSER}'=='chrome'    Go To    http://${SERVER}
     ...     ELSE    Go To    https://${SERVER}
 
+Go To The Right URL
+    [Arguments]    ${url}
+    Run Keyword If    '${LOCAL_RUN}'=='Yes'   Go To    http://${SERVER}/${url}
+    ...     ELSE    Go To    https://${SERVER}/${url}
+
 Logout From BGP Without Alert
     Click    logout-button
     Sleep    1s
