@@ -496,13 +496,10 @@ def is_empty(value):
 def set_chrome_options():
     chromeOptions = webdriver.ChromeOptions()
     # Prefs to disable password/credentials saving alert (for Appian login)
-    prefs = {"credentials_enable_service": False,
-             'profile': {'password_manager_enabled': False}}
-    chromeOptions.add_experimental_option("prefs", prefs)
     #Start Fullscreen because as of 9 June 2017 start-maximized switch is bugged
     # chromeOptions.add_argument("start-fullscreen")
     chromeOptions.add_argument("headless")
-    chromeOptions.add_argument("window-size=1280,1080")
+    chromeOptions.add_argument("kiosk")
     #Disable all extensions before running
     chromeOptions.add_argument("disable-extensions")
     #Ignore certificate errors (Appian side self-signed)
