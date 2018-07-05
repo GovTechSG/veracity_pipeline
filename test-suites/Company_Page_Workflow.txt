@@ -28,20 +28,20 @@ ${company_hashid}   eowtne
     ...            2. Check that information is displayed
 
 
-    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
-    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Run Keyword And Continue On Failure  Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     Check company information
 
 [Company Page] Display Company Offerings
 
-    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
-    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Run Keyword And Continue On Failure  Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     Check company offerings
 
 [Company Page] Display Company Scores and Reviews
 
-    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
-    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Run Keyword And Continue On Failure  Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     Check company scores and reviews
 
 *** Keywords ***

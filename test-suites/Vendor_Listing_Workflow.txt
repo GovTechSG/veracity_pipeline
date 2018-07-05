@@ -38,14 +38,14 @@ ${grant_query}              SELECT COUNT(*) FROM (${grant_companies_query}) AS a
 
     ##Retrieve Vendors from Backend
     Load Vendor Listing Page
-    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
     ${count}=   Get Matching Xpath Count   xpath=//div[contains(@class, 'vendor-item')]
     Should Be Equal As Integers     ${count}    ${vendors_seeded_paginated}
 
 [View by Newly Added] List Vendors by Newly Added
 
-    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
-    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Run Keyword And Continue On Failure  Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
 
     ##Click Newly Added
     Click Newly Added
@@ -55,25 +55,25 @@ ${grant_query}              SELECT COUNT(*) FROM (${grant_companies_query}) AS a
 
 [Search by Name] Search Vendors by Name
 
-    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
-    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Run Keyword And Continue On Failure  Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     Click Search
 
 [Filter by Industries] Filter Vendors by Industries
 
-    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
-    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Run Keyword And Continue On Failure  Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     Click Industry Filter
 
 [Filter by Grants] Filter Vendors by Grants
 
-    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
-    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Run Keyword And Continue On Failure  Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     Click Grants Filter
 
 [Company Page] Company Names are Clickable
-    Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
-    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Run Keyword And Continue On Failure  Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     Click first company
     Wait Until Page Contains Element    //span[contains(@class, 'companypage-back')]
 
@@ -91,10 +91,10 @@ Load Vendor Listing Page
 
 Click Newly Added
     Click Element   xpath=//a[@id="newly_added"]
-    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
 
 Click Next Page
-    Wait Until Page Contains Element    xpath://a[contains(text(),'NEXT')]
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    xpath://a[contains(text(),'NEXT')]
     Click Element   xpath://a[contains(text(),'NEXT')]
 
 Sorted by Newly Added
@@ -109,7 +109,7 @@ Sorted by Newly Added
     \   ${index}=       Evaluate    ${index}+1
 
     Click Next Page
-    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
 
     ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'vendor-name')]
     :FOR  ${element}  IN  @{matched elements}
@@ -123,31 +123,31 @@ Click Search
     Input Text    xpath=//input[@id="company-search-bar"]    ${search_value}
     Press Key    xpath=//input[@id="company-search-bar"]   ${ENTER_KEY}
     ${elements from db}=    Query     SELECT COUNT(*) FROM ( SELECT * FROM public.companies WHERE name ILIKE '%${search_value}%' AND discarded_at IS NULL LIMIT ${vendors_seeded_paginated} ) AS a
-    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
     ${db count as int}=     Db Count To Int     ${elements from db}
-    ${matched elements}=    Get Element Count     xpath=//div[contains(@class, 'vendor-name')]
-    Should Be Equal         ${matched elements}     ${db count as int}
+    ${matched elements}=    Get Matching Xpath Count     xpath=//div[contains(@class, 'vendor-name')]
+    Numeric Should Be Equal         ${matched elements}     ${db count as int}
     
 Click Industry Filter
-    Wait Until Page Contains Element    //li[contains(@class, 'industry-category')]
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    //li[contains(@class, 'industry-category')]
     Select Checkbox     xpath=//li[contains(@class, 'industry-category')]/div/label[contains(@title, '${industry_filter_value}')]/input
     ${elements from db}=    Query     SELECT COUNT(*) FROM ( SELECT * FROM public.companies WHERE id IN ( ${industry_companies_query} ) AND discarded_at IS NULL LIMIT ${vendors_seeded_paginated} ) AS a
-    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
     ${db count as int}=     Db Count To Int     ${elements from db}
-    ${matched elements}=    Get Element Count     xpath=//div[contains(@class, 'vendor-name')]
-    Should Be Equal         ${matched elements}     ${db count as int}
+    ${matched elements}=    Get Matching Xpath Count     xpath=//div[contains(@class, 'vendor-name')]
+    Numeric Should Be Equal         ${matched elements}     ${db count as int}
 
 Click Grants Filter
-    Wait Until Page Contains Element    //li[contains(@class, 'grant-category')]
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    //li[contains(@class, 'grant-category')]
     Select Checkbox     xpath=//li[contains(@class, 'grant-category')]/div/label[contains(@title, '${grant_filter_value}')]/input
     ${elements from db}=    Query     ${grant_query}
-    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
     ${db count as int}=     Db Count To Int     ${elements from db}
-    ${matched elements}=    Get Element Count     xpath=//div[contains(@class, 'vendor-name')]
-    Should Be Equal         ${matched elements}     ${db count as int}
+    ${matched elements}=    Get Matching Xpath Count     xpath=//div[contains(@class, 'vendor-name')]
+    Numeric Should Be Equal         ${matched elements}     ${db count as int}
 
 Click first company
-    Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
     Click Element   xpath=//div[contains(@class, 'vendor-name')]
     Sleep   1
-    Wait Until Page Contains Element    //div[contains(@class,'vendor-card')]
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    //div[contains(@class,'vendor-card')]
