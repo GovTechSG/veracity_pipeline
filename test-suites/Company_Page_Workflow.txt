@@ -114,13 +114,13 @@ Check company scores and reviews
 
 
     # Check that there are 5 reviews 
-    ${matched elements}=    Get Webelements     class:review
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'review')]
     Length Should Be    ${matched elements}     ${review_pagination}
 
     # Check that load more works
     Click Element   xpath=//button[contains(@class, 'load-more-button')]
     Sleep   2
-    ${matched elements}=    Get Webelements     class:review
+    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'review')]
     ${two page}=    Evaluate    ${review_pagination} + ${review_pagination}
     Length Should Be    ${matched elements}     ${two_page}
 
