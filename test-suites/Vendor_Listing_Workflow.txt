@@ -90,7 +90,7 @@ Load Vendor Listing Page
     Title Should Be    Government Review Platform
 
 Click Newly Added
-    Click Element   id:newly_added
+    Click Element   xpath=//a[@id="newly_added"]
     Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
 
 Click Next Page
@@ -120,8 +120,8 @@ Sorted by Newly Added
     \   ${index}=       Evaluate    ${index}+1
 
 Click Search
-    Input Text    id:company-search-bar    ${search_value}
-    Press Key    id:company-search-bar    ${ENTER_KEY}
+    Input Text    xpath=//input[@id="company-search-bar"]    ${search_value}
+    Press Key    xpath=//input[@id="company-search-bar"]   ${ENTER_KEY}
     ${elements from db}=    Query     SELECT COUNT(*) FROM ( SELECT * FROM public.companies WHERE name ILIKE '%${search_value}%' AND discarded_at IS NULL LIMIT ${vendors_seeded_paginated} ) AS a
     Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
     ${db count as int}=     Db Count To Int     ${elements from db}

@@ -29,7 +29,7 @@ ${company_hashid}   eowtne
 
 
     Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
-Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
+    Wait Until Page Does Not Contain Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
     Check company information
 
 [Company Page] Display Company Offerings
@@ -81,9 +81,9 @@ Check company offerings
 Check company scores and reviews
     ${text}=    Get Text     xpath=//div[contains(@class, 'review-count')]
     Should Not Be Empty     ${text}
-    Element Should Be Visible   id:positive-row
-    Element Should Be Visible   id:neutral-row
-    Element Should Be Visible   id:negative-row
+    Element Should Be Visible   xpath=//div[@id="positive-row"]
+    Element Should Be Visible   xpath=//div[@id="neutral-row"]
+    Element Should Be Visible   xpath=//div[@id="negative-row"]
     ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'review-bar')]
     Length Should Be    ${matched elements}     3
 
@@ -100,13 +100,13 @@ Check company scores and reviews
     Should Not Be Empty     ${text}
     ${text}=    Get Text     xpath=//span[contains(@class, 'review-date')]
     Should Not Be Empty     ${text}
-    ${text}=    Get Text     id:review-rating
+    ${text}=    Get Text     xpath=//div[@id="review-rating"]
     Should Not Be Empty     ${text}
     ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'review-aspects')]//div
     ${length}=  Get Length  ${matched elements}
     ${result}=      Numeric less than or equal to   1     ${length}
     Should Be True     ${result}
-    ${text}=    Get Text     id:offerings
+    ${text}=    Get Text     xpath=//div[@id="offerings"]
     Should Not Be Empty     ${text}
     ${text}=    Get Text     xpath=//div[contains(@class, 'review-content')]//span
     Should Not Be Empty     ${text}
@@ -124,9 +124,9 @@ Check company scores and reviews
     Length Should Be    ${matched elements}     ${two_page}
 
     #Check that filters work
-    Click Element   id:positive-filter
+    Click Element   xpath=//a[@id="positive-filter"]
     Sleep   2
-    ${matched elements}=    Get Webelements     id:review-rating
+    ${matched elements}=    Get Webelements     xpath=//div[@id="review-rating"]
     Length Should Be    ${matched elements}     ${review_pagination}
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
@@ -136,9 +136,9 @@ Check company scores and reviews
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
     \   Should Be Equal     ${text}     ${positive_header}
 
-    Click Element   id:neutral-filter
+    Click Element   xpath=//a[@id="neutral-filter"]
     Sleep   2
-    ${matched elements}=    Get Webelements     id:review-rating
+    ${matched elements}=    Get Webelements     xpath=//div[@id="review-rating"]
     Length Should Be    ${matched elements}     ${review_pagination}
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
@@ -149,9 +149,9 @@ Check company scores and reviews
     \   Should Be Equal     ${text}     ${negative_header}
     
 
-    Click Element   id:negative-filter
+    Click Element   xpath=//a[@id="negative-filter"]
     Sleep   2
-    ${matched elements}=    Get Webelements     id:review-rating
+    ${matched elements}=    Get Webelements     xpath=//div[@id="review-rating"]
     Length Should Be    ${matched elements}     ${review_pagination}
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
