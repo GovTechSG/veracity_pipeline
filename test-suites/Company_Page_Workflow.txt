@@ -89,6 +89,7 @@ Check company scores and reviews
 
     # Check that aspects are sorted by count
     ${matched elements}=    Get Webelements     xpath=//span[contains(@class, 'aspect-count')]
+    ${current_value}=   Set Variable    9999999
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
     \   ${result}=      Numeric less than or equal to   ${text}     ${current_value}
