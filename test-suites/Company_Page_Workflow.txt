@@ -88,7 +88,7 @@ Check company scores and reviews
     Length Should Be    ${matched elements}     3
 
     # Check that aspects are sorted by count
-    ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'aspect-count')]
+    ${matched elements}=    Get Webelements     xpath=//span[contains(@class, 'aspect-count')]
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
     \   ${result}=      Numeric less than or equal to   ${text}     ${current_value}
