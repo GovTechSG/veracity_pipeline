@@ -128,7 +128,9 @@ Check company scores and reviews
     Execute Javascript    document.getElementById("positive-filter").click();
     Sleep   2
     ${matched elements}=    Get Webelements     xpath=//div[@id="review-rating"]
-    Length Should Be    ${matched elements}     ${review_pagination}
+    ${length}=  Get Length   ${matched elements}
+    ${result}=      Numeric less than or equal to   ${length}     ${review_pagination}
+    Should Be True     ${result}
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
     \   Should Be Equal     ${text}     ${positive_rating}
@@ -140,7 +142,9 @@ Check company scores and reviews
     Execute Javascript    document.getElementById("neutral-filter").click();
     Sleep   2
     ${matched elements}=    Get Webelements     xpath=//div[@id="review-rating"]
-    Length Should Be    ${matched elements}     ${review_pagination}
+    ${length}=  Get Length   ${matched elements}
+    ${result}=      Numeric less than or equal to   ${length}     ${review_pagination}
+    Should Be True     ${result}
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
     \   Should Be Equal     ${text}     ${neutral_rating}
@@ -153,7 +157,9 @@ Check company scores and reviews
     Execute Javascript    document.getElementById("negative-filter").click();
     Sleep   2
     ${matched elements}=    Get Webelements     xpath=//div[@id="review-rating"]
-    Length Should Be    ${matched elements}     ${review_pagination}
+    ${length}=  Get Length   ${matched elements}
+    ${result}=      Numeric less than or equal to   ${length}     ${review_pagination}
+    Should Be True     ${result}
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
     \   Should Be Equal     ${text}     ${negative_rating}
