@@ -119,14 +119,14 @@ Check company scores and reviews
 
     # Check that load more works
     Click Element   xpath=//button[contains(@class, 'load-more-button')]
-    Sleep   5
+    Sleep   2
     ${matched elements}=    Get Webelements     xpath=//div[@class="review"]
     ${two page}=    Evaluate    ${review_pagination} + ${review_pagination}
     Length Should Be    ${matched elements}     ${two_page}
 
     #Check that filters work
-    Click Element   xpath=//a[@id="positive-filter"]
-    Sleep   5
+    Execute Javascript    document.getElementById("positive-filter").click();
+    Sleep   2
     ${matched elements}=    Get Webelements     xpath=//div[@id="review-rating"]
     Length Should Be    ${matched elements}     ${review_pagination}
     :FOR  ${element}  IN  @{matched elements}
@@ -137,8 +137,8 @@ Check company scores and reviews
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
     \   Should Be Equal     ${text}     ${positive_header}
 
-    Click Element   xpath=//a[@id="neutral-filter"]
-    Sleep   5
+    Execute Javascript    document.getElementById("neutral-filter").click();
+    Sleep   2
     ${matched elements}=    Get Webelements     xpath=//div[@id="review-rating"]
     Length Should Be    ${matched elements}     ${review_pagination}
     :FOR  ${element}  IN  @{matched elements}
@@ -150,8 +150,8 @@ Check company scores and reviews
     \   Should Be Equal     ${text}     ${negative_header}
     
 
-    Click Element   xpath=//a[@id="negative-filter"]
-    Sleep   5
+    Execute Javascript    document.getElementById("negative-filter").click();
+    Sleep   2
     ${matched elements}=    Get Webelements     xpath=//div[@id="review-rating"]
     Length Should Be    ${matched elements}     ${review_pagination}
     :FOR  ${element}  IN  @{matched elements}
