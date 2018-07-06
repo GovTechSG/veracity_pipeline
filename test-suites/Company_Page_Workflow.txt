@@ -131,6 +131,8 @@ Check company scores and reviews
     ${length}=  Get Length   ${matched elements}
     ${result}=      Numeric less than or equal to   ${length}     ${review_pagination}
     Should Be True     ${result}
+    ${result}=      Numeric greater than or equal to   ${length}     1
+    Should Be True     ${result}
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
     \   Should Be Equal     ${text}     ${positive_rating}
@@ -144,6 +146,8 @@ Check company scores and reviews
     ${matched elements}=    Get Webelements     xpath=//div[@id="review-rating"]
     ${length}=  Get Length   ${matched elements}
     ${result}=      Numeric less than or equal to   ${length}     ${review_pagination}
+    Should Be True     ${result}
+    ${result}=      Numeric greater than or equal to   ${length}     1
     Should Be True     ${result}
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
@@ -159,6 +163,8 @@ Check company scores and reviews
     ${matched elements}=    Get Webelements     xpath=//div[@id="review-rating"]
     ${length}=  Get Length   ${matched elements}
     ${result}=      Numeric less than or equal to   ${length}     ${review_pagination}
+    Should Be True     ${result}
+    ${result}=      Numeric greater than or equal to   ${length}     1
     Should Be True     ${result}
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
