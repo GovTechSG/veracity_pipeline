@@ -41,8 +41,6 @@ ${ALPHANUMERIC}    ${2}
 ${ENTER_KEY_ASCII}    \\13
 ${HOR_TAB_KEY_ASCII}    \\9
 ${BACKSPACE_KEY_ASCII}    \\8
-${USERNAME}     bgp
-${PASSWORD}     test12
 
 ###############
 # Login page #
