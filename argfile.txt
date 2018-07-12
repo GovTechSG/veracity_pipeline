@@ -21,5 +21,6 @@
 # to set the order of executions
 --name GRP
 
+  test-suites/Login_Workflow.txt
   test-suites/Vendor_Listing_Workflow.txt
   test-suites/Company_Page_Workflow.txt

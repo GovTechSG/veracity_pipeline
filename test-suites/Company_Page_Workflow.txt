@@ -48,7 +48,7 @@ ${company_hashid}   eowtne
 Suite Setup
     Initialise ROR Test Suite
     Connect To Database Using Custom Params     psycopg2    database=${DB_NAME}, user=${DB_USER}, password=${DB_PWD}, host=${DB_SERVER}, port=${DB_PORT}
-    Go To The Right URL       company/${company_hashid}
+    Log In to GovReview
 
 Suite Teardown
     Disconnect From Database
