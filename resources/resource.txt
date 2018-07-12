@@ -252,3 +252,10 @@ Wait for End To End Communication
     Close Browser
     Log To Console    Waiting ${time} for End To End Communication...
     Sleep    ${time}
+
+Log In To GovReview
+    Wait Until Page Contains Element    xpath=//input[@id="username"]
+    Input Text    xpath=//input[@id="username"]    ${USERNAME}
+    Input Text    xpath=//input[@id="password"]    ${PASSWORD}
+    Click Element   xpath=//button[@id="signin"]
+    Sleep   2

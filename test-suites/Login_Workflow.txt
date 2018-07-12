@@ -1,0 +1,73 @@
+*** Settings ***
+Documentation     *Objectives:*
+...               1. To Validate the Login and Logout Process
+...               1. Backend to Frontend for Authentication
+
+Suite Setup       Suite Setup
+Suite Teardown    Suite Teardown
+Test Setup        Go To The Right Home Page
+Force Tags        vendor_listing_workflows    end-to-end    1
+Resource          ../resources/resource.txt
+Library           DatabaseLibrary
+Library           OperatingSystem
+Library           Collections
+
+*** Variables ***
+${WRONG_USERNAME}   wrong
+${WRONG_PASSWORD}   incorrect
+${login_failed_message}     Authentication Failed!
+
+*** Test Cases ***
+[Login] Authentication Fail when wrong username and password
+	[Documentation]  *Objective:*    
+    ...            1. Input incorrect username and password
+    ...            2. Check that authentication fail message appears
+    ...            3. Check that there is no redirect
+
+    Log In To GovReview With Incorrect Credentials
+    Check For Login Failure
+    
+
+[Login] Log in and log out successful
+    [Documentation]  *Objective:*    
+    ...            1. Input correct username and password
+    ...            2. Check that page is redirected to vendor listing
+    ...            3. Click log out
+    ...            4. Check that page is redirected to login page
+
+    Log In To GovReview
+    Check For Successful Login
+    Click Element   xpath=//button[@id="logout-button"]
+    Check For Successful Logout
+
+*** Keywords ***
+Suite Setup
+    Initialise ROR Test Suite
+
+Suite Teardown
+    Teardown Test Suite Without Alert
+
+Log In To GovReview With Incorrect Credentials
+    Wait Until Page Contains Element    xpath=//input[@id="username"]
+    Input Text    xpath=//input[@id="username"]    ${WRONG_USERNAME}
+    Input Text    xpath=//input[@id="password"]    ${WRONG_PASSWORD}
+    Click Element   xpath=//button[@id="signin"]
+    Sleep   2
+
+Check For Login Failure
+    ${text}=    Get Text    xpath=//div[@id='login-failed']
+    Should Be Equal     ${text}     ${login_failed_message}
+    Page Should Not Contain Element    //div[contains(@class, 'vendor-item')]
+
+Check For Successful Login
+    Page Should Contain Element    //div[contains(@class, 'vendor-item')]
+    ${token}=     Execute Javascript    return sessionStorage.getItem('authToken');
+    Log     ${token}
+    Should Not Be Empty     ${token}
+
+Check For Successful Logout
+    Page Should Contain Element    xpath=//input[@id="username"]
+    Page Should Contain Element    xpath=//input[@id="password"]
+    ${token}=     Execute Javascript    sessionStorage.getItem('authToken');
+    # authToken shoulnd not exist and returns None
+    Should Be Equal    ${token}     ${None}
