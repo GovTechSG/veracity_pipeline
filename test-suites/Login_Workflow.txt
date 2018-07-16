@@ -37,7 +37,7 @@ ${login_failed_message}     Authentication Failed!
 
     Log In To GovReview
     Check For Successful Login
-    Click Element   xpath=//button[@id="logout-button"]
+    Execute Javascript    document.getElementById("logout-button").click();
     Check For Successful Logout
 
 *** Keywords ***
