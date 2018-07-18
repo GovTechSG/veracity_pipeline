@@ -37,7 +37,6 @@ ${grant_query}              SELECT COUNT(*) FROM (${grant_companies_query}) AS a
     ...            2. Verify Vendors are sorted by ratings
 
     ##Retrieve Vendors from Backend
-    Load Vendor Listing Page
     Run Keyword And Continue On Failure  Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
     ${count}=   Get Matching Xpath Count   xpath=//div[contains(@class, 'vendor-item')]
     Should Be Equal As Integers     ${count}    ${vendors_seeded_paginated}
@@ -86,9 +85,6 @@ Suite Setup
 Suite Teardown
     Disconnect From Database
     Teardown Test Suite Without Alert
-
-Load Vendor Listing Page
-    Title Should Be    Government Review Platform
 
 Click Newly Added
     Click Element   xpath=//a[@id="newly_added"]
