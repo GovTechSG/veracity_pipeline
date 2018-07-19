@@ -809,6 +809,15 @@ def numeric_greater_than_or_equal_to(x, y):
 def numeric_should_be_equal(x, y):
     return int(x) == int(y)
 
+def float_less_than_or_equal_to(x, y):
+    return float(x) <= float(y)
+
+def float_greater_than_or_equal_to(x, y):
+    return float(x) >= float(y)
+
+def float_should_be_equal(x, y):
+    return float(x) == float(y)
+
 def db_count_to_int(query_count):
     return int(query_count[0][0])
 

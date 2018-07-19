@@ -41,6 +41,9 @@ ${grant_query}              SELECT COUNT(*) FROM (${grant_companies_query}) AS a
     ${count}=   Get Matching Xpath Count   xpath=//div[contains(@class, 'vendor-item')]
     Should Be Equal As Integers     ${count}    ${vendors_seeded_paginated}
 
+    ##Verify Vendors are sorted by aggregate_score
+    Sorted by Best Ratings
+
 [View by Newly Added] List Vendors by Newly Added
 
     Run Keyword And Continue On Failure  Wait Until Page Contains Element    xpath=//*[local-name() = 'svg' and @class='nc-icon glyph']
@@ -93,6 +96,26 @@ Click Newly Added
 Click Next Page
     Run Keyword And Continue On Failure  Wait Until Page Contains Element    xpath=//a[@class="prev-next next"]
     Click Element   xpath=//a[@class="prev-next next"]
+
+Sorted by Best Ratings
+    ${matched elements}=    Get Webelements     xpath=//div[@id='aggregate-score']
+    ${current_value}=   Set Variable   ${max_ratings}
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=    Get Text    ${element}      # will get the text of each matched node
+    \   ${result}=      Float less than or equal to   ${text}     ${current_value}
+    \   Should Be True     ${result}
+    \   ${current_value}=   Set Variable    ${text}
+
+    Click Next Page
+    Run Keyword And Continue On Failure  Wait Until Page Contains Element    //div[contains(@class, 'vendor-item')]
+
+    ${matched elements}=    Get Webelements     xpath=//div[@id='aggregate-score']
+    :FOR  ${element}  IN  @{matched elements}
+    \   ${text}=    Get Text    ${element}      # will get the text of each matched node
+    \   ${result}=      Float less than or equal to   ${text}     ${current_value}
+    \   Should Be True     ${result}
+    \   ${current_value}=   Set Variable    ${text}
+
 
 Sorted by Newly Added
     ${matched elements}=    Get Webelements     xpath=//div[contains(@class, 'vendor-name')]
