@@ -102,6 +102,8 @@ Sorted by Best Ratings
     ${current_value}=   Set Variable   ${max_ratings}
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
+    \   ${text}=    Run Keyword If    '${text}'=='-'    Set Variable    ${0}
+    \   ...         ELSE    Set Variable    ${text}
     \   ${result}=      Float less than or equal to   ${text}     ${current_value}
     \   Should Be True     ${result}
     \   ${current_value}=   Set Variable    ${text}
@@ -112,6 +114,8 @@ Sorted by Best Ratings
     ${matched elements}=    Get Webelements     xpath=//div[@id='aggregate-score']
     :FOR  ${element}  IN  @{matched elements}
     \   ${text}=    Get Text    ${element}      # will get the text of each matched node
+    \   ${text}=    Run Keyword If    '${text}'=='-'    Set Variable    ${0}
+    \   ...         ELSE    Set Variable    ${text}
     \   ${result}=      Float less than or equal to   ${text}     ${current_value}
     \   Should Be True     ${result}
     \   ${current_value}=   Set Variable    ${text}
