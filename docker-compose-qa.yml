@@ -1,7 +1,7 @@
 version: '2'
 services:
   clamd:
-    image: dinkel/clamavd
+    image: govtechsg/clamav
   sandbox:
     image: wynn987/product-review-platform
     depends_on:
