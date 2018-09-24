@@ -1,7 +1,7 @@
 version: '2'
 services:
   clamd:
-    image: dinkel/clamavd
+    image: govtechsg/clamavd
   prod:
     image: wynn987/govreview
     depends_on:
